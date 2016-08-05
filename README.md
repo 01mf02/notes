@@ -2,6 +2,12 @@
 ========
 
 
+Satallax idea
+-------------
+
+The more props were created from a prop that did not lead to a proof, the worse the prop is.
+
+
 More interesting projects
 -------------------------
 
