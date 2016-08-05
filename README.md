@@ -1,3 +1,19 @@
+5.8.2016
+========
+
+
+More interesting projects
+-------------------------
+
+From an old list that I found floating around:
+
+* Verified k-NN / Naive Bayes
+* LeanCoP @ Idris
+* Simpsets
+* Deep Learning
+* Latent Semantics in RF
+
+
 4.8.2016
 ========
 
@@ -233,3 +249,108 @@ Quoting an email to Cezary (8 Jun 2016):
   learn that continuous application of that premise will help you eliminate
   that goal easily. I thought this was quite similar to what Hazel Duncan did,
   but we will yet have to see.
+
+
+1.7.2016
+========
+
+
+Here is a little résumé of discussions I had with people at IJCAR:
+
+
+Christoph Wernhard
+------------------
+
+* Henkin quantifiers: <https://en.wikipedia.org/wiki/Branching_quantifier>
+* Patrick Doherty, Witold Lukaszewicz, and Andrzej Sza las. Computing circumscription revisited: A reduction algorithm.
+
+* leanCoP: Do not only use a maximum depth, but allow higher depths in case that the branch does not explode too much.
+  See: <http://cs.christophwernhard.com/pie/cmprover/index.html>
+
+
+Vampire talk (selecting the selection)
+--------------------------------------
+
+* Literal selection in Vampire:
+  Give preference to literals that are least likely to unify with some term.
+  The idea is that if we are in such a position where we can actually unify
+  with such an unlikely unifiable term, then we should definitely do it! :)
+  That means: Prefer literals that are large (contain many constants),
+  and prefer literals that have more frequent occurrence of the same variable.
+
+
+GAPT
+----
+
+* Deskolemisierung ist in Arbeit
+
+Workflow:
+
+* Expansion proof erhalten
+* expansionSequent.antecedent gibt die Prämissen zurück
+* Jede Prämisse ist selbst wieder ein Expansionsbaum
+* extractInstances gibt die vollständig instaniierten tiefen Formeln zurück
+* Vermutlich bester Einstiegspunkt: ExpansionToResolutionProof
+* Gibt die einzelnen Transformationsschritte (allE, impI, ...) zurück,
+  die zu einem Widerspruch führen
+* Konvention: auf der linken Seite Konjunktion von negativen Sachen,
+  rechts Disjunktion von positiven Sachen
+* Isabelle muss gar nicht klausifizieren
+* Problem: Skolem-Funktionen (werden von GAPT eingeführt)
+* Vielleicht als erster Schritt Skolemisierung mittels Epsilon-Termen
+  in HOL selbst machen, dann ist Deskolemisierung trivial
+
+
+Jens
+----
+
+* "Be ignorant" of what other people do
+* What am I doing differently?
+
+Ideen für leanCoP/nanoCoP:
+
+* positive Startklauseln statt Konjekturklauseln (laut Jens besser)
+* PathLim nicht nur von PathLim, sondern auch von Klauselgröße
+  schon im Óriginal-leanCoP-Paper experimentell getestet
+* vielleicht auch mit Machine Learning das Maximal-Limit beeinflussen?
+
+
+Jasmine
+-------
+
+* Möchte an neuem Beweiser für HOL arbeiten, der auf gut funktionierenden
+  Techniken für FOL basiert und der first-order-Probleme möglichst
+  gleich gut wie ein FOL-Beweiser lösen sollte
+* Instanziierungs-Suche für HO-Formeln: simple Heuristik,
+  und wenn diese nicht funktioniert, "shot in the dark".
+  Das verbessert die Performanz deutlich -- welches Paper??
+* GAPT in Isabelle nicht unbedingt eine gute Idee, weil
+  Beweis-Suche jedesmal auf dem entsprechenden Beweiser beruht
+* ProofMarket: schlechte Idee, weil nicht an Benutzern orientiert
+* "Have at least one user"
+* Beweise mit Löchern -- Löcher zulassen, wenn möglicherweise Prämisse vergessen
+* Type encodings?
+
+* Nunchaku: nette Pipeline-Architektur
+
+
+Hans de Nivelle
+---------------
+
+* Skolemisation: Buch von Jean Gallier <http://www.cis.upenn.edu/~jean/home.html>
+* Geo: ATP ohne Skolemisation!
+
+
+Christoph Benzmüller
+--------------------
+
+* <https://page.mi.fu-berlin.de/cbenzmueller/>
+* Serge Autexier, Andreas Meier: haben zusammengearbeitet und
+  scheinbar ein Problem gefunden, dessen Deskolemisierung
+  exponentielles Verhalten aufwies
+
+
+Premise selection
+-----------------
+
+* Use SInE?
