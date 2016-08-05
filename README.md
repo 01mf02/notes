@@ -2,6 +2,77 @@
 ========
 
 
+Satallax formula graph
+----------------------
+
+Chad implemented recording all formulae that were created during proof search
+and which formulae caused the creation of which other formulae,
+together with the information whether any of these formulae was
+used in the proof.
+
+Based on this information, I wrote a small tool that visualises this (graph.ml):
+
+~~~ ocaml
+open Syntax
+open Printf
+
+let filter_useless = false
+
+let print_node chan i (u, t) =
+  if filter_useless
+  then (if u then fprintf chan "  %d [tooltip=\"%s\"];\n" i (trm_str t) else ())
+  else fprintf chan "  %d [style=filled tooltip=\"%s\" fillcolor=%s];\n" i (trm_str t) (if u then "green" else "red")
+
+
+let print_edge chan is_used (target, sources) =
+  let tooltip = String.concat ", " (List.map string_of_int sources) in
+  List.iter (fun source -> if is_used target && is_used source then fprintf chan "  %d -> %d [tooltip=\"%s\"];\n" source target tooltip else ()) sources
+
+let print_graph chan (nodes, edges) =
+  let is_used i = if filter_useless then fst (Hashtbl.find nodes i) else true in
+  fprintf chan "digraph {\n";
+  Hashtbl.iter (print_node chan) nodes;
+  List.iter (print_edge chan is_used) edges;
+  fprintf chan "}\n"
+
+let load_formdeps fp =
+  let f = open_in_bin fp in
+  let forms : (int, bool * trm) Hashtbl.t = input_value f in
+  let deps : (int * int list) list = input_value f in
+  close_in f;
+  (forms, deps)
+
+let _ =
+  let formdeps = load_formdeps Sys.argv.(1) in
+  print_graph stdout formdeps
+~~~
+
+It can be called as follows (needs syntax.ml and utils.ml from Satallax):
+
+    ocamlbuild graph.native
+    ./graph.native PUZ/PUZ081^1.p.formdeps | xdot /dev/stdin
+
+While `xdot` is great, especially compared to the graphical user interface of
+`dot` (which is extremely horrible), it unfortunately does not display the
+tooltips that give the actual terms and for the edges the producing nodes.
+So a different calling variant is:
+
+    ./graph.native PUZ/PUZ081^1.p.formdeps | dot -Tsvg -o test.svg
+
+Firefox can render the tooltips just fine, but it is a bit clumsy.
+(You need to position the mouse cursor perfectly to get the tooltip.)
+The best would be if xdot could just display the tooltips …
+
+One can choose (via setting `filter_useless`) to only show those formulae
+that contributed to the final proof. Sometimes, the unnecessary formulae
+take up so much space that processing takes too long, in which case
+this comes handy.
+
+We also analysed the problem PUZ081^1.p, coming to the conclusion that
+Zoey is a knight and Mel is a knave, as well as that knowing "Doctor Who"
+might give clues to the solution of such puzzles.
+
+
 Satallax idea
 -------------
 
