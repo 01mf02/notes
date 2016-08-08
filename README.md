@@ -1,3 +1,120 @@
+8.8.2016
+========
+
+
+Monday meeting
+--------------
+
+We had our Monday discussion today, and Jiří talked about his usage of
+"parse trees with holes" to parse ambiguous sentences.
+In a nutshell, he learns the parse trees of training examples, where
+he actually learns several versions of the tree, which differ in the
+maximal depth. Then, from the frequency of the parse trees, he
+calculates a probability for each parse tree.
+When parsing new examples, he chooses the parse tree with the
+highest probability. Problems seem to arise when multiple parse trees
+overlap, but I did not completely understand what he meant.
+
+In any case, Jiří also suggested me to compare my machine learning methods
+to a standard method such as SInE, which is a good idea.
+Now how to run SInE on a set of THF problems? I should revisit the
+premise selection parts of HOL(y)Hammer or ask Cezary ...
+
+
+Prolog, pt. 2
+-------------
+
+I revisited the problem from 3.8.2016 to generate formulae with Prolog.
+With Jirka's help, I created the following (lowerbound.pl):
+
+~~~ prolog
+% definitions of logical connectives and quantifiers
+:- [nanocop_tptp2].
+
+r(0, g0 => g0).
+
+r(N, F) :-
+  N > 0,
+  M is N-1,
+  r(M, S),
+
+  atom_codes('p',PC), atom_codes('g',GC),
+  number_codes(N,NC),
+  append(PC,NC,PNC), append(GC,NC,GNC),
+  atom_codes(PN,PNC), atom_codes(GN,GNC),
+
+  PNX =.. [PN, X],
+  PNY =.. [PN, Y],
+
+  F = ((? [X]: PNX | GN) => (? [Y]: (PNY | GN) & S)).
+
+formula(N, fof(1, conjecture, F)) :- r(N, F).
+~~~
+
+It can be run as follows (here for size 2):
+
+    swipl -q -t "[lowerbound], formula(2,F), print(F), nl."
+
+In comparison, a similar Haskell version looks much less readable:
+
+~~~ haskell
+import System.Environment
+
+r 0 = "g0 => g0"
+r n = concat ["\n  ((? [X", n', "]: p", n', "(X", n', ") | g", n', ") => (? [Y", n', "]: (p", n', "(y", n', ") | g", n', ") & ", r (n-1), "))"]
+  where n' = show n
+
+main = do
+  [n] <- getArgs
+  putStrLn ("fof(1, conjecture, (" ++ r (read n) ++ "\n  )).")
+~~~
+
+Next, I measured the sizes of the corresponding nanoCoP proofs.
+A little `bash` is all that we need:
+
+~~~ bash
+#!/bin/bash
+for i in {1..10}
+do
+  swipl -q -t "[lowerbound], formula($i,F), print(F), nl." > lowerbound$i.p
+  ./nanocop.sh lowerbound$i.p | wc -w
+done
+~~~
+
+This gives as output the number of words per proof for the formulae
+from n = 1 to 10:
+
+~~~
+129
+216
+303
+390
+477
+564
+651
+738
+825
+912
+~~~
+
+Looks quite linear, with k = 87.
+This can be expected from reading the article of Baaz, Hetzl & Weller,
+where the authors show that the Skolemised version of the problem
+has a proof of maximally linear size (p. 15).
+However, they also proved that all cut-free proofs of the
+nonskolemised version are of at least exponential size.
+When talking about this with Jiří, he meant that because in Isabelle,
+one actually *has* cut, it might be possible to get the proof size down.
+In particular, he mentioned Martin Giese <https://heim.ifi.uio.no/martingi/>,
+who apparently did work on some tableaux calculi with respect to skolemisation.
+According to Jiří, also Jens Otten might be working on a CoP version
+that does not rely on skolemisation, i.e. it directly treats quantifiers.
+This would of course be the laziest alternative of all. :)
+But it would probably also create exponential-size proofs for problems
+like this one, because the calculus is cut-free.
+
+
+
 5.8.2016
 ========
 
