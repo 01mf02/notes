@@ -1,3 +1,85 @@
+9.8.2016
+========
+
+
+MePo
+----
+
+To integrate SInE in Satallax as a baseline comparison for ML methods,
+I asked Cezary some time ago whether he had an implementation of SInE.
+His response:
+
+> We already quite extensively use Sine in E and Vampire.
+> In fact the Epar strategies suggest more use of Sine in Mizar problems
+> / Flyspeck problems than with usual TPTP.
+>
+> Also sine and mepo are quite similar in the overall way they work -
+> recursively adding more to a set of similar things with some trigger -
+> and the 'mepoX.cpp' do implement versions of this algorithm adapted to
+> higher-order logic and without the special Isabelle tweaks.
+>
+> And we also did E.T. which combined Sine with kNN and NB in a FOF prover.
+
+So I looked at "mepo3.cpp" in the repository and first transformed it
+to the style of the other "modernised" predictors, to actually understand
+what it does.
+This new version of MePo runs much faster than the old one;
+on the Mizar-MPTP2k dataset, the old takes 18min56sec vs 0min41sec for the new
+with identical statistics.
+However, they are both a lot slower than k-NN, which takes only
+1sec43msec and has better statistical values:
+
+           Samples      Cov     Prec      Rec      AUC     Rank
+--------- -------- -------- -------- -------- -------- --------
+mepomizar     1689    0.673    9.387   476.16   0.8123   149.82
+knnmizar      1689    0.874   13.619   249.75   0.9202    54.41
+
+
+SInE
+----
+
+I read the article "Sine Qua Non for Large Theory Reasoning" (2011) by
+Kryštof Hoder and Andrei Voronkov at
+<http://link.springer.com/chapter/10.1007%2F978-3-642-22438-6_23>.
+A nice overview of SInE is
+<http://resources.mpi-inf.mpg.de/departments/rg1/conferences/deduction10/slides/krystof-hoder.pdf>.
+
+However, for me a major weakness of SInE seems to be that the trigger relation
+is a black-or-white thing. This is also indicated by the
+generality threshold and the tolerance, which make the algorithm work better
+under some circumstances, but smell like workarounds.
+I think it would be better to have a notion of "trigger probability",
+where a symbol s triggers an axiom A with a certainty p.
+The certainty of an axiom A could then be the sum of certainties from
+any symbol s to A.
+The certainty of a symbol could be its inverse number of occurrences.
+Or something like that. One should probably also make an inductive definition,
+where axioms and symbols are k-certain,
+otherwise our calculation might not terminate.
+
+However, I'm asking myself whether the idea I roughly sketched out there
+is not already implemented somewhere. I would be surprised if that was not case.
+Furthermore, has SInE in Vampire received any substantial updates since
+the writing of the article (2011)?
+
+
+Knights and Knaves
+------------------
+
+Chad and I further discussed the TPTP problem PUZ/PUZ081^1.p,
+and noted that one axiom was actually not used in the Satallax proof.
+That is because the conjecture says something like
+"there exists a knight and a knave", and the proof actually does not say
+*who* is the knight and who is the knave. It rather makes a case distinction
+and says that in both cases (Mel is a knight or Mel is not a knight) there
+exists a knight and a knave.
+The original problem description is thus actually hard (or impossible?)
+to model in classical logic. However, by embedding
+intuitionistic first-order logic in classical higher-order logic,
+it might be possible to state the problem in such a way that it actually
+corresponds to the original "knights and knaves" problem.
+
+
 8.8.2016
 ========
 
