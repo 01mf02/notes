@@ -1,3 +1,242 @@
+12.8.2016
+=========
+
+
+k-NN age
+--------
+
+I experimented with the `age` in k-NN.
+At first I thought that removing it improves results, but then I found out
+that this was due to a bug, namely that I did rank all theorems,
+not only the first n ones, where n specified by the user.
+The bug being fixed, it looked like the current age calculation
+really works best.
+
+* age: age(k) = 500000000 - 100 * k
+* agelin: age(k) = -100 * k
+* noage: age(k) = 0
+
+Results:
+
+                    Samples      Cov     Prec      Rec      AUC     Rank
+------------------ -------- -------- -------- -------- -------- --------
+knnisabelle-age        1650    0.833    5.983   412.39   0.9491   104.23
+knnisabelle-agelin     1650    0.832    5.977   418.12   0.9483   105.98
+knnisabelle-noage      1650    0.831    5.954   622.09   0.9144   175.37
+
+
+
+OCaml is dangerous
+------------------
+
+Consider the following code:
+
+~~~ ocaml
+if Hashtbl.mem to_eval i then
+  print_eval no_th stdout i (knn_eval (th_syms i) (sym_ths, sym_wght) deps i 2048);
+add_syms (th_syms i)
+~~~
+
+Imagine you want to refactor this such that the call to `knn_eval`
+is on its own line:
+
+~~~ ocaml
+if Hashtbl.mem to_eval i then
+  let ans = (knn_eval (th_syms i) (sym_ths, sym_wght) deps i 2048) in
+  print_eval no_th stdout i ans;
+add_syms (th_syms i)
+~~~
+
+However, this will get parsed to:
+
+~~~ ocaml
+if Hashtbl.mem to_eval i then
+  (let ans = (knn_eval (th_syms i) (sym_ths, sym_wght) deps i 2048) in
+  print_eval no_th stdout i ans;
+  add_syms (th_syms i))
+~~~
+
+To get the desired behaviour, you need to write:
+
+~~~ ocaml
+if Hashtbl.mem to_eval i then
+  (let ans = (knn_eval (th_syms i) (sym_ths, sym_wght) deps i 2048) in
+  print_eval no_th stdout i ans);
+add_syms (th_syms i)
+~~~
+
+So by adding the `let`, the `if` captures multiple commands after it.
+Extremely unintuitive, if you ask me. Solution? Use Haskell! :)
+
+
+
+11.8.2016
+=========
+
+
+Sledgehammer proof terms
+------------------------
+
+Chad gave me a set of problems where he suspects that the large number of
+axioms prevents Satallax from finding a proof, however,
+Isabelle found proofs for these problems.
+I would like to find out which axioms Isabelle used to prove the problems.
+I tried things like
+
+    ./isabelle tptp_sledgehammer 10 test.p
+
+but the output is quite cryptic:
+
+~~~
+0:00:05 elapsed time, 0:00:14 cpu time, factor 2.80
+running spass for 1 s
+SUCCESS: spass
+% SZS status GaveUp
+poly: : warning: The type of (it) contains a free type variable. Setting it to a unique
+~~~
+
+Does this now mean that SPASS was successful or that it did not find a proof
+and gave up?
+
+Chad suggested me to generate the output files with
+
+    ./isabelle tptp_translate FOF test.p
+
+and then run some first-order prover on them, then get out the axioms it used.
+
+
+OCaml k-NN
+----------
+
+I tested the OCaml version of k-NN in the repository, and its performance
+seems to strongly depend on the value of k chosen.
+For k = 100, it approaches to the performance of the C++ version,
+but it is still not completely there.
+For this reasons, I created a new OCaml version based on the C++ version,
+which now exceeds the C++ version's AUC a bit for the Mizar dataset,
+probably due to the `fast_sort` algorithm used.
+It seems really that the sorting makes a difference both in
+runtime and in statistical performance.
+`knnold100` represents the previous OCaml implementation of k-NN with
+k = 100.
+
+* `heap_sort`: 0:05.42elapsed
+* `fast_sort`: 0:05.09elapsed
+* `knnold100`: 0:01.99elapsed
+
+Statistics:
+
+           Samples      Cov     Prec      Rec      AUC     Rank
+--------- -------- -------- -------- -------- -------- --------
+heapsort      1689    0.637   10.728   413.80   0.8947   181.00
+fastsort      1689    0.877   13.616   304.58   0.9376    60.41
+knnold100     1689    0.751   10.809   420.16   0.9173    86.71
+
+
+Integrating premise selection into Satallax
+-------------------------------------------
+
+I discussed with Chad how to integrate premise selection into Satallax.
+He told me that the `RELEVANCE_DELAY` is the place to look at,
+because this influences the order of theorems used based on a simple heuristic
+that checks which axioms have symbols in common with the conjectures.
+This also considers the polarity of the subformula where the symbol appears.
+The easiest thing to do would be to just add the rank (0, 1, ...) of the axiom
+according to the premise selection to this relevance delay.
+However, Chad pointed out that this might lead to already the second axiom
+never being used, so he suggested me to group the axioms.
+For example, instead of adding (0, 1, 2, ...), I might add
+(0, 0, 0, ..., 1, 1, 1, ...).
+
+I did some work on integrating the premise selection, but I got distracted
+by the convoluted search.ml file which I wanted to refactor by splitting
+it into preprocessing and search parts, but I stopped this in the end
+because I noted that the preprocessing is too closely intertwined with the
+actual search.
+
+
+Neural ATP
+----------
+
+Josef sent me an article about a neural automated theorem prover for
+higher-order logic. When Chad saw it proved problems from MetaMath,
+he first commented that MetaMath was not really higher-order logic,
+so I take the results with a grain of salt.
+
+
+
+10.8.2016
+=========
+
+
+OCaml flags
+-----------
+
+Having worked on the C++ version of MePo, I naturally want to
+port it to OCaml so we can use it in Satallax.
+As there already exist some classifiers in OCaml, I looked at
+their Makefile, which contained entries like:
+
+~~~
+knn: utils.ml format.ml tfidf.ml knn.ml
+       ocamlopt -inline 100 -unsafe unix.cmxa str.cmxa $^ -o $@
+       rm *[.]cm* *[.]o
+~~~
+
+The new version is:
+
+~~~
+%.native: *.ml
+	ocamlbuild -libs str,unix $@
+~~~
+
+I searched for a solution to include the `-inline 100 -unsafe` flags
+from ocamlopt in the `ocamlbuild` version, but failed.
+Strangely, according to
+<https://groups.google.com/forum/#!topic/fa.caml/z-vQtT_rNgk>,
+it should work via
+
+    ocamlbuild -cflags -inline,2 target.native
+
+but doing that gives me the error
+
+    /usr/bin/ocamlc: unknown option '-inline'.
+
+The problem is that `ocamlopt` is not used, and `ocamlc`
+does not seem to support the `-inline` flag. How to solve this?
+
+
+MePo pt. 2
+----------
+
+I worked some more on the C++ version of MePo, reducing runtime from
+41sec to about 35sec by not entering a while loop if it is clear
+from the start that it will return some value.
+Furthermore, for the Euclidean distance, I improved runtime from
+5min2sec to 46sec. The reason for the slow runtime was the copying
+of the current symbol map (C++ map from long to double), which was
+copied in the first place to modify it by and by, to achieve the
+set-theoretic difference.
+While this is good idea once the number of features becomes
+very large, the runtime penalty induced by copying the map outweighs
+the benefits.
+
+Runtime results:
+
+* Cosine: 35sec
+* Jaccard: 37sec
+* Euclid: 46sec
+
+Statistical results:
+
+              Samples      Cov     Prec      Rec      AUC     Rank
+------------ -------- -------- -------- -------- -------- --------
+mepocosmizar     1689    0.673    9.387   476.16   0.8123   149.82
+mepojacmizar     1689    0.657    9.111   530.70   0.7757   184.99
+mepoeucmizar     1689    0.567    7.989   566.35   0.7468   198.00
+
+
+
 9.8.2016
 ========
 
@@ -324,7 +563,7 @@ Consider the sequent:
 * Conclusion: $\Rightarrow p \to \bot, p$
 
 This can be proven in sequent calculus, but it is neither possible
-to prove only $\Rightarrow p \to \bot$ nor is it possible to prove only $p$.
+to show only $\vdash p \to \bot$ nor is it possible to show only $\vdash p$.
 
 I then proposed a new version of the translation theorem:
 If $\Gamma \Rightarrow \Delta$, then
