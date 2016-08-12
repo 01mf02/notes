@@ -2,6 +2,91 @@
 =========
 
 
+`SEU/SEU652^1.p`
+----------------
+
+I ran the problem `SEU/SEU652^1.p` with the premise selection code and
+noted that it terminates after about 15 seconds with error code 141.
+Strangely, when we increase verbosity to above 4, the problem
+gets solved by mode 484, which calls `eprover`.
+Also just calling mode 484 on the problem works.
+It might be a problem of interplay between different modes being run.
+
+
+First premise selection results
+-------------------------------
+
+I integrated k-NN into Satallax, as described yesterday.
+As dependencies, I just used the empty list for every axiom.
+
+I ran Satallax on a file `thf-manyaxioms` that contains
+one TPTP problem name per line, consisting of 31 problems:
+
+~~~ bash
+#!/bin/bash
+for i in `cat thf-manyaxioms`
+do
+  FILE=`find ~/Downloads/TPTP/ -name $i.p`
+  if [ -n "$FILE" ]; then
+    echo $FILE
+    ./satallax.native -t 30 $FILE
+  fi
+done
+~~~
+
+The result is a bit awkward to interpret, because it has the
+file name and the result on different lines. Excerpt:
+
+~~~
+/home/mfaerber/Downloads/TPTP/SEU/SEU652^1.p
+% SZS status Theorem
+% Mode: mode518
+% Inferences: 236
+/home/mfaerber/Downloads/TPTP/SEU/SEU653^1.p
+% SZS status Timeout
+% Inferences: 19547
+~~~
+
+To get them into shape, a little bit of Haskell:
+
+~~~ haskell
+import Data.Maybe
+import Data.List
+
+split [] = []
+split (fst : lines) =
+  let (hd, tl) = break (isJust . stripPrefix "/home") lines
+  in (fst : hd) : split tl
+
+main = interact (unlines . map (intercalate " - ") . split . lines)
+~~~
+
+Example output:
+
+~~~
+/home/mfaerber/Downloads/TPTP/SEU/SEU652^1.p - % SZS status Theorem - % Mode: mode518 - % Inferences: 236
+/home/mfaerber/Downloads/TPTP/SEU/SEU653^1.p - % SZS status Timeout - % Inferences: 19547
+~~~
+
+To get all the problems from `pslog` that Satallax was able to prove:
+
+    runhaskell splitres.hs < pslog | grep Theorem | cut -d " " -f 1 > psth
+
+I did this for versions with and without k-NN premise selection.
+To compare them, I ran:
+
+    comm <(sort nopsth) <(sort psth)
+
+It turns out that without premise selection, 13 problems were solved,
+versus 17 with premise selection. Of these, 2 were uniquely solved
+without PS and 6 uniquely with PS. The union therefore is 19.
+Optimistically calculating, that is a plus of 46% on these problems! :)
+Perhaps even better results could be achieved by integrating more
+PS methods (such as SInE resp. MePo) and combining their results,
+or by tweaking the ranking, e.g. giving the same rank to axioms
+that got the same weight from k-NN.
+
+
 k-NN age
 --------
 
