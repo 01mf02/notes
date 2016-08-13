@@ -2380,6 +2380,49 @@ Already now, the results for the refactored C++ version are nice (Mizar):
 
 
 
+16.3.2015
+=========
+
+
+Data formats
+------------
+
+The TPTP data formats include:
+
+* CNF: conjunctive normal form.
+* FOF: first-order CNF formulas.
+* TFF0: FOF plus types.
+* TFF1: TFF0 plus shallow polymorphism
+* THF0: TFF0 plus higher-order functions
+* THF1: currently proposal, combines TFF1 and THF0, roughly as expressive as HOL
+
+Based on this, we have our own data format, HH, which is more powerful than
+THF1, for one can also export data from Coq or Matita to it. However, it does
+not have a semantics, but it is still useful for tasks such as feature
+extraction.
+
+
+Restructuring
+-------------
+
+According to Cezary, Thibault did work on thf1hh1, which he claims to do mostly
+things that thf0hh1 already did. If this is true, this might be up for a merge.
+Furthermore, the relationship between predict and predict_knn should be cleared.
+
+To make things clearer, it would also be nice to rename all files main$x.ml to
+just $x.ml, while moving the "library" files (like read.ml) to suitable
+subdirectories. What should these subdirectories be?
+
+
+Lambda lifting
+--------------
+
+Currently, lambda lifting only works for HOL Light. A generalisation of this to
+different ITPs would be desirable. The functionality is in hh_tac.ml, I want to
+look at this.
+
+
+
 20.2.2015
 =========
 
