@@ -1966,6 +1966,184 @@ Sparse matrices
 
 
 
+17.7.2015
+=========
+
+
+Some Flyspeck theorems only provable by Metis
+---------------------------------------------
+
+    (|- ~(a = &0) ==> ~(&1 / a = &0),
+    [|- !x y. ~(x * y = &0) <=> ~(x = &0) /\ ~(y = &0);
+     |- ~(a = &0) <=> &1 / a * a = &1]);
+
+    (|- !m n p. ~(n = 0) ==> (m MOD n * p MOD n) MOD n = (m * p) MOD n,
+    [|- m * n = n * m;
+     |- !m n p. ~(n = 0) ==> (m * p MOD n) MOD n = (m * p) MOD n]);
+
+    (|- !s1 s2. LENGTH s1 = LENGTH s2 ==> LENGTH (TL s1) = LENGTH (TL s2),
+    [|- !l. LENGTH l = 0 <=> l = [];  LENGTH_EQ_NIL
+     |- !l. ~(l = []) ==> LENGTH (TL l) = LENGTH l - 1]);  LENGTH_TL
+
+    (|- !s. IMAGE (\x. x) s = s,   IMAGE_ID
+    [|- !s t. ~(s = t) <=> (?x. x IN t <=> ~(x IN s));    NOT_EQUAL_SETS
+     |- !y s f. y IN IMAGE f s <=> (?x. y = f x /\ x IN s)]);  IN_IMAGE
+
+
+Output from extreme debugging session
+-------------------------------------
+
+~~~ ocaml
+(* rinse & repeat *)
+let res = match (Resolution.iterate res) with Undecided r -> r;;
+let act = Resolution.active res;;
+let wt = Resolution.waiting res;;
+let Some ((d,cl),_) = Waiting.remove wt;;
+let () = print_endline ("Resolution.iterate: cl " ^ (Clause.toString cl));;
+let active = act;;
+let (Some cl') = Active.simplifyActive Active.maxSimplify active cl;;
+let active = Active.addClause active cl;;
+let cl = Clause.freshVars cl;;
+
+(* deduce *)
+let Active.Active {parameters=parameters;literals=literals;equations=equations;subterms=subterms} = active;;
+(* just one element in set, p2 p3 c7 *)
+let lits = Clause.largestLiterals cl;;
+
+(* deduceResolution *)
+let acc = [];;
+let [lit] = Literal.Set.toList lits;;
+let (_,atm) = lit;;
+
+(* Literal_net.unify *)
+let {Literal_net.positive=positive;negative=negative} = literals;;
+let negated = (Literal.negate lit);;
+let (false, atm) = negated;;
+
+(* Atom_net.unify *)
+let tm = Atom_net.atomToTerm atm;;
+(*Term_net.unify negative (Atom_net.atomToTerm atm);;*)
+
+(* Term_net.unify *)
+let (Term_net.Net (parm, _, Some (_,net))) = negative;;
+(* Term_net.finally parm (Term_net.mat [] [(Name.Map.newMap (), net, [tm])]);; *)
+(* actually: Term_net.mat [] [(Name.Map.newMap (), net, [tm])];; *)
+
+(* Term_net.mat (last) *)
+let in = [(Name.Map.newMap (), net, [tm])];;
+let ((qsub, Term_net.Multiple (v,fns), Term.Fn (f,a) :: tms) :: rest) = in;;
+let rest = match v with None -> rest;;
+let peeky = Name_arity.Map.peek fns (f, List.length a);;
+let rest = match peeky with Some net -> (qsub, net, a @ tms) :: rest;;
+
+(* Term_net.mat (second to last) *)
+~~~
+
+
+Old commands
+------------
+
+~~~
+sed \
+ -e 's/datatype /type /g' \
+ -e 's/fun /let /g' \
+ -e 's/val /let /g' \
+ -e 's/ =>/ ->/g' \
+ -e 's/SOME/Some/g' \
+ -e 's/NONE/None/g' \
+ -e 's/List.foldl/MList.foldl/g' \
+ -e 's/List.null/MList.null/g' \
+ -e 's/fn /fun /g' \
+ -e 's/raise \(.*\);/raise (\1);/g' \
+ -e 's/;/;;/g' \
+ -e 's/case \(.*\) of/match \1 with/g' \
+ -e 's/NameAritySet/NameArity.Set/g' \
+ -e 's/NameArityMap/NameArity.Map/g' \
+ -e 's/NameSet/Name.Set/g' \
+ -e 's/NameMap/Name.Map/g' \
+ -e 's/andalso/\&\&/g' \
+ -e 's/orelse/||/g'
+~~~
+
+What the F ... was that one good for (rename.sh)?
+
+    sed -i "s/\(^\|[^[:alnum:]]\)$1\(\$\|[^[:alnum:]]\)/\1$2\2/g" $3
+
+
+OCaml woes
+----------
+
+To use the Metis toplevel, you have to do:
+
+    make metis.top
+    rlwrap ./metis.top
+
+Then you can open modules, such as:
+
+    open Resolution;;
+
+This works only because of the file .ocamlinit, which changes the directory
+to the build directory (where the .cmo files are).
+Otherwise, one cannot open any modules!
+
+
+
+10.7.2015
+=========
+
+
+Extracting ATP dependencies
+---------------------------
+
+    grep "[a-z0-9]$" deps.atp
+
+
+Getting names of a list of proven theorems
+------------------------------------------
+
+~~~ ocaml
+let uniquesh = Utils.foldl_file (fun acc x -> x :: acc) [] "uniques_metis";;
+let uniquesh' = map hd (map (Utils.string_split_on '.') uniquesh);;
+let uniquest = map find_hash uniquesh';;
+let uniqdepsh = map (fun h -> (h, assoc h probs)) uniquesh';;
+let uniqdepst = map (fun (p, ds) -> (find_thm (find_hash p), map (find_thm o find_hash) ds)) uniqdepsh;;
+~~~
+
+
+
+12.6.2015
+=========
+
+
+HOL Light cheat sheet
+---------------------
+
+* DISCH_TAC: move implications into assumptions
+* ACCEPT_TAC tm: solve the current goal with tm
+
+
+
+29.5.2015
+=========
+
+
+Meeting with Cezary
+-------------------
+
+I finished the initial Metis translation to OCaml. Next will be the linkup
+to existings TPTP parsers. For this, Cezary suggested to look at
+hh2/translate/fol/fof.ml, in particular at the `file_mat` function, where
+he suggested to remove the line with `eqsym` because it is specific to Leancop?
+In the same directory, I can try leancop with
+
+    make leancop
+    ./leancop PUZ001-1.tptp
+
+Strangely, Leancop finds a proof for PUZ001-1 (SZS status Theorem), but Metis
+gives SZS status Unsatisfiable for the same file.
+
+
+
 18.5.2015
 =========
 
