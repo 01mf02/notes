@@ -1119,7 +1119,7 @@ Hoy
 
 
 
-21.1.2015
+21.1.2016
 =========
 
 
@@ -1133,7 +1133,7 @@ Inspiration from: <http://stackoverflow.com/questions/926069/add-up-a-column-of-
 
 
 
-18.1.2015
+18.1.2016
 =========
 
 
@@ -1156,7 +1156,7 @@ That is a plus of only 5.1%, compared to the plus of 26% with internal guidance.
 
 
 
-15.1.2015
+15.1.2016
 =========
 
 
@@ -1189,7 +1189,7 @@ fresh variables.
 
 
 
-14.1.2015
+14.1.2016
 =========
 
 
@@ -1235,7 +1235,7 @@ Get number of problems proven by mode
 
 
 
-13.1.2015
+13.1.2016
 =========
 
 
@@ -1256,7 +1256,7 @@ I talked with Aart and René, and we came to the following agreement:
 
 
 
-8.1.2015
+8.1.2016
 ========
 
 Experiments to run
@@ -1279,7 +1279,7 @@ To be more precise: 269 problems solved by both, 7 problems only solved by
 training, and 9 problems only solved by on-the-fly.
 
 
-7.1.2015
+7.1.2016
 ========
 
 
@@ -1299,7 +1299,7 @@ minimally 49 problems were solved (sometimes 51).
 
 
 
-4.1.2015
+4.1.2016
 ========
 
 
@@ -1515,6 +1515,24 @@ earlier theorems in the THF file come earlier in the list.
 If this step is *not* taken, then speed severely degrades, namely on 529
 Mizar problems it goes from 8s to about 16s.
 Can we somehow use this effect, e.g. by shuffling the theorem order?
+
+
+
+3.11.2015
+=========
+
+Using femalecop & hasher
+------------------------
+
+The training process works as follows:
+
+    ./leancop tptp/PUZ001-1.tptp > data
+    ./hasher
+    ./leancop -learn tptp/PUZ001-1.tptp
+
+The first command creates training data, which the hasher than uses to write a
+condensed datai file. When leancop is called with the learn parameter, it tries
+to read datai and uses it for internal guidance.
 
 
 
