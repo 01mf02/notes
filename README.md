@@ -956,6 +956,691 @@ Premise selection
 * Use SInE?
 
 
+
+21.1.2015
+=========
+
+
+Getting the total number of assumptions in Flyspeck problems
+------------------------------------------------------------
+
+    (for i in *.p; do echo $i `grep Assm $i | wc -l`; done) > assmn
+    cat assmn | cut -d ' ' -f 2 | paste -sd+ - | bc
+
+Inspiration from: <http://stackoverflow.com/questions/926069/add-up-a-column-of-numbers-at-the-unix-shell>
+
+
+
+18.1.2015
+=========
+
+
+Experiments with 2s automatic mode
+----------------------------------
+
+I ran Satallax in 2s automatic mode on all Flyspeck problems.
+The result: 3139 proven problems
+This against: 3303 proven problems in 1s w/o and 1s with guidance
+
+The difference is only about 5%, but might be put into perspective if
+we look at the modes used in the 2s automatic mode: There, about 404
+new solved problems come from a mode that was not used in the 1s run.
+In total, 11 different modes found proofs during the 2s run, while
+during the 1s run, it was only 7.
+
+Running the evaluation again for 2s, but limited to the modes that
+were used in proofs found during the 1s run, we get now 2751 solved problems.
+That is a plus of only 5.1%, compared to the plus of 26% with internal guidance.
+
+
+
+15.1.2015
+=========
+
+
+TPTP problem categories with most THF files
+-------------------------------------------
+
+The top three:
+
+* SEU: 847
+* SYO: 658
+* SEV: 409
+
+Proudly presented by:
+
+    (for i in TPTP-v6.2.0/Problems/*; do echo `ls $i/*^?.p | wc -l` $i; done) | sort -n
+
+We get the following results:
+
+* SEU: 501 solved, 0 with ascending normalisation
+* SYO: 433 solved, 3 with ascending normalisation, 1 without
+* SEV: 152 solved, 5 with ascending normalisation, 2 without
+
+Interesting about the SEU results is that there were very few negative examples.
+
+Just for reference, the 902 Mizar problems: 572 solved, 15 with ascending normalisation, 2 without
+
+All of these experiments were run in automatic mode. This might be responsible
+for the bad results for Mizar, or it could be the filtering of terms with
+fresh variables.
+
+
+
+14.1.2015
+=========
+
+
+Experiments with whole Flyspeck (14185 problems)
+------------------------------------------------
+
+Automatic mode, simple classifier:
+
+* Training proven: 2616
+* ML additional proven: 687 (+26%)
+
+Training:
+
+    1672 mode175
+     476 mode188
+     319 mode238
+      74 mode288
+      41 mode252
+      29 mode19c
+       4 mode289
+
+ML:
+
+    423 mode288
+    156 mode175
+     79 mode188
+     11 mode289
+     11 mode238
+      3 mode252
+      2 mode19c
+
+
+Mode 483, simple classifier:
+
+* Training proven: 2054
+* ML additional proven: 270 (+13%)
+
+
+Get number of problems proven by mode
+-------------------------------------
+
+    grep mode training/*.log | cut -d ' ' -f 2 | sort | uniq -c | sort -rn
+
+
+
+13.1.2015
+=========
+
+
+Normalisation
+-------------
+
+Without normalisation: 43
+With complete normalisation: 37
+
+
+Dissertationsvereinbarung
+-------------------------
+
+I talked with Aart and René, and we came to the following agreement:
+
+* SS2016: trial of MIP seminar, two courses in "generic competences"
+* SS2017: MIP seminar, defensio
+
+
+
+8.1.2015
+========
+
+Experiments to run
+------------------
+
+* Run Satallax with 5s and see how many theorems solved then with ML
+* Run Satallax on whole Flyspeck
+* Adjust weights for simple classifier
+
+
+On-the-fly evaluation
+---------------------
+
+I tried to build the initial training files by updating the simple classifier
+on the fly, that is, after every solved training file. The results were quite
+discouraging, however: We increase from 276 only to 278 solved problems.
+The number is the same whether we learn the problems in order or reversed.
+
+To be more precise: 269 problems solved by both, 7 problems only solved by
+training, and 9 problems only solved by on-the-fly.
+
+
+7.1.2015
+========
+
+
+Term classification
+-------------------
+
+I've experimented with the term classifier and positive/negative examples.
+So far, the experiments show that adding even very small values for every
+feature that appears both in a training example and among the current
+features (axioms) gives worse experimental outcome. So far, I did not consider
+IDF data, but it seems unlikely to me that this will change things.
+I'll experiment with the `fi` and `fr` functions of the Bayesian classifier.
+Furthermore, it seems that the current Bayesian classifier is too slow,
+in particular the `relevance` function: With it (not modifying the priority),
+maximally 45 problems (sometimes less) could be solved, while without it,
+minimally 49 problems were solved (sometimes 51).
+
+
+
+4.1.2015
+========
+
+
+Different formulae for simple classifier
+----------------------------------------
+
+I tried different formulae for the simple classifier.
+The constants are $w_p = -1$ and $w_n = 1$.
+
+* 55: $|p-n| / (p+n) * (w_p * p + w_n * n)$ (confidence)
+* 51: $(w_p * p + w_n * n)$
+* 27: $5 * (w_p * p + w_n * n)/(p+n)$
+* 22: $w_p * \log(p+1) + w_n * \log(n+1)$
+* 17: $2 * (w_p * p + w_n * n)/(p+n)$
+
+
+
+Discriminating conjectures appearing in axioms
+----------------------------------------------
+
+Happy new year! Whee!
+
+I looked at how many conjectures (goals) among the first 1000 Flyspeck problems
+appeared among axioms of solved problems. Only 15 such conjectures exist, of a
+total of 268 conjectures. (Because we have 268 solved problems.)
+As this is less than 10%, it is improbable that a special treatment of such
+training examples would have a large impact. I thought for example about
+discriminating terms that appeared in the proof of a conjecture that is now
+present among the set of axioms. This would delay the treatment of
+intermediate lemmata that were however only useful to prove the conjecture.
+Yet, for different datasets, this approach might be a viable route.
+
+
+
+22.11.2015
+==========
+
+
+New Flyspeck results
+--------------------
+
+* Filtering out all terms containing fresh names solves 59 problems (+21.8%)!
+* Only learning axiom terms solves 48 problems.
+
+So we are doing a bit more than premise selection, even if learning the
+premises seems to play the most important role in the learning process.
+
+Running Satallax in parallel gives worse results, namely it solves only
+52 instead of 59 problems, for example.
+
+
+Automatic mode
+--------------
+
+I tested Satallax also in automatic mode on Flyspeck, both 1s and 2s.
+
+* 1s: 344 theorems
+* 2s: 414 theorems
+
+Generating training data from the 1s data was not straightforward, because
+Satallax could frequently not find the proof again, which I do not understand
+currently yet. Even setting the timeout to the double of what it was before
+does not help. I should try to merge the refutation term and training phases
+to see whether this works, possibly not saving the data about the currently
+processed terms anymore (I suspect this to be a real performance killer in
+larger proofs!).
+
+I trained Satallax on a subset of 267 theorems for which training data could
+be reconstructed in 1s. This was able to prove 71 theorems which could not
+previously be solved in 1s (also not in refutation term generation)!
+Compared to running Satallax in automatic mode for 2s, there remain
+35 unique theorems. This number might increase if we were able to generate
+complete training data in automatic mode.
+
+
+
+21.11.2015
+==========
+
+
+Flyspeck
+--------
+
+Using the simple classifier on the first 1000 problems of the Flyspeck dataset
+brings about 52 new theorems compared to the 271 theorems
+Satallax proves by itself. That is an increase of about 19%!
+
+
+Normalising
+-----------
+
+I noted that many learnt terms only differ in their fresh variables, e.g.:
+
+    imp (imp (v1_zfmisc_1 __13) False) (imp (v1_xboole_0 __13) False)
+    imp (imp (v1_zfmisc_1 __14) False) (imp (v1_xboole_0 __14) False)
+
+To counter this, I made two new schemes, uniform and ascending:
+Uniform replaces all fresh variables by the same fresh variable, while
+ascending labels fresh variables per term in a uniform (ascending) way.
+
+Results (new theorems proven):
+
+* Uniform: ~5
+* Ascending: 30
+* No treatment: 52
+
+The performance difference should be negligible, as reproving the training
+data takes 18s both with and without calculation of normalised terms.
+
+
+
+16.11.2015
+==========
+
+
+Positive vs. negative examples
+------------------------------
+
+I plotted the results from the simple classifier:
+
+    sed 's/\(.*\) lresults-pw\(.*\)-nw\(.*\)/\1 \2 \3/' results > gpresults
+    splot "gpresults" using 2:3:1
+
+The negative examples impact the learning much more than the positive ones;
+when the negative examples are rewarded, not a single problem can be
+additionally solved, whereas punishing positive examples still solves quite
+some problems until a certain point, where a few less problems can be solved.
+
+The message is clear: We have to consider negative examples in all classifiers!
+
+
+
+15.11.2015
+==========
+
+
+Future work
+-----------
+
+I would like to try:
+
+- term -> term Bayes classification
+- obtaining features only from initial branch vs. from processed terms
+
+And always remember the motto:
+
+GET STUFF DONE! :)
+
+
+Experimental results
+--------------------
+
+I tried the Bayesian classifier (symbols -> symbols) as well as term weights.
+The results were quite bad; not a single problem could be additionally solved
+by these learning methods.
+I tried different parameters using PSO, namely 490 different configurations
+for Bayes and 138 configurations for term weights.
+It might be a good idea to try these methods first on the solved problems to see
+whether proving performance can be initially improved for these. Furthermore,
+I should do more debugging to see whether the priorities assigned actually
+make sense.
+
+
+Getting number of proven theorems
+---------------------------------
+
+    (for i in lresults-*; do echo `grep Theorem $i/* | wc -l` $i; done) | sort -n
+
+
+
+7.11.2015
+=========
+
+
+Simple classifier
+-----------------
+
+I implemented a simple classifier that just checks whether a proof term was
+previously present and adjusts the weight accordingly. First experiments
+were promising, with 18 of 372 previously unsolved problems solved (4.8%).
+Next work is to adapt the weights, as well as to integrate IDF and to try
+feature-dependent classification. Furthermore, I'll evaluate how many of
+the problems can be solved by the automatic strategy and how the learning
+impacts the number of solved problems there.
+
+
+Best Satallax mode
+------------------
+
+Contrary to the note from 30.11.2015, the Mizar mode that solves by far the
+most Mizar problems seems to be mode483, not mode438. It yields 529 solved
+problems, with the training data being about 31.1MB. By contrast, mode438
+produces training data of several hundreds of megabytes.
+
+
+4.11.2015
+=========
+
+
+Command to display hasher statistics
+------------------------------------
+
+    ~/satallax/hasher.native classifier training/* | sort -n | egrep -v 'Read|updated|calcul|Wrote' | gvim -
+
+
+Order of branch axioms
+----------------------
+
+When constructing the initial branch, the axioms parsed from the THF file
+are added in reverse order of occurrence to the initial branch reference.
+Before the start of the search, the initial branch is reversed, such that
+earlier theorems in the THF file come earlier in the list.
+If this step is *not* taken, then speed severely degrades, namely on 529
+Mizar problems it goes from 8s to about 16s.
+Can we somehow use this effect, e.g. by shuffling the theorem order?
+
+
+
+30.11.2015
+==========
+
+
+Mizar problems solved by mode
+-----------------------------
+
+Solved     Mode
+------- -------
+    236 mode438
+    235 mode439
+     67 mode495
+     16 mode445
+     10 mode371
+      1 mode405
+
+Running mode438 with timeout 10s on all problems yielded 464 solved problems.
+However, the training data gets quite large, namely 3.6GB.
+Running it with timeout of 0.1s solved 148 problems, producing only 15MB.
+Interestingly, even for problems which were solved with both timeouts,
+the training data with t=10s is frequently larger than with t=0.1s:
+For example, arytm_3__329_37 produces training data of 105KB for t=0.1s,
+whereas it produces 1.1MB for t=10s. Probably Satallax behaves differently
+internally depending on how much time it knows it still has available?
+Oops, it might be I actually ran it in automatic mode ...
+
+
+
+18.11.2015
+==========
+
+
+Inefficient processed feature calculation (always recalc)
+---------------------------------------------------------
+
+* Without any ML: 0m0.808s
+* With proc feature calc: 0m17.373s
+* With term feats: 0m17.400s
+* The whole calculation, but without influence on final result: 0m17.312s
+
+Efficient processed feature update
+----------------------------------
+
+Total time: 0m1.142s
+YESS!! It seems really that the calculation of the features takes most
+of the time! Just caching this gives us an enormous boost.
+
+
+15.11.2015
+==========
+
+
+Term weights
+------------
+
+With term weights:
+Solved: 526 (66.9%)  Failed: 260  Total: 786  Avg time: 0.68s
+Unique: 2
+
+Without term weights (two runs):
+Solved: 552 (69.3%)  Failed: 245  Total: 797  Avg time: 0.49s
+Solved: 551 (70.2%)  Failed: 234  Total: 785  Avg time: 0.42s
+Unique: 27
+
+So far, using term weights has made the proving much slower.
+However, it is not yet clear whether this comes from slow term weight
+calculation of from a possibly bad influence on the proving process.
+
+
+
+11.11.2015
+==========
+
+
+Learning instantiations
+-----------------------
+
+I discussed with Chad which things might be nicely predicted. We ranked:
+
+1. ProcessProp1
+2. NewInst
+3. Mating
+
+How about the new instantiation? When a NewInst command is taken from the
+priority queue, its term is instantiated for every universal quantifier
+than matches its type.
+We could save which formulas that were instantiated with which terms
+contributed to a proof, to find out in future situations how useful a certain
+instantiation might be.
+
+Furthermore, we could generate types as features.
+
+
+10.11.2015
+==========
+
+
+Discussion after my talk
+------------------------
+
+- Symbol features might quickly converge to some constant state
+- Preselection of training data based on features
+- Features that better reflect prover state, e.g. "how many existentials
+  have we eliminated currently", or other things à la TPTP as in E
+- Does it make sense to even have a notion of "recent actions" that
+  characterise prover state? If so, what should go there?
+- Skolemisation -> is it a problem (generated constants)?
+- Bob Veroff -> hints technique
+  record intermediate lemmata that were generated during Prover9 proof
+  search, then give high weight to them when encountered in new problem --
+  does not consider prover state at all!
+  good for Prover9 problems, but for Mizar less successful (possibly because
+  smaller domain)
+- E -> constant weighting can be learned from previous proofs,
+  probably less powerful than ML internal guidance, but faster and easier to
+  change in E
+
+
+
+4.11.2015
+=========
+
+
+Statistics
+----------
+
+About 95%-99% of the commands in the priority queue are ProcessProp1 commands.
+Of these, many are often the same. When we do machine learning, we should
+probably filter these out to avoid recalculation of priority queue scores,
+for performance reasons.
+
+
+What are we gonna do?
+---------------------
+
+We first record the proof states S together with the used propositions P.
+Then, we use the hasher to create features F from proof states S.
+In the prover, we first filter out only the training data related to the
+propositions of the current problem (axioms).
+Then, at every point we call insertWithPriority with a ProcessProp1 command,
+we look up the proposition in the training set and calculate its usefulness
+with NB or k-NN.
+
+Extension ideas:
+
+- Store with propositions P in proof database also the uniqueness of P, i.e.
+  how many failed proof attempts have used P.
+
+
+Review of "Learning Search Control Knowledge for Equational Theorem Proving"
+----------------------------------------------------------------------------
+
+This article by Stephan Schulz describes internal guidance obtained from
+previous proofs.
+As training data, he selects both clauses that directly contributed to the
+proof, as well as clauses that did not directly contribute to it, but which
+could be relatively easily derived from the contributing clauses.
+The clauses that directly contributed are deemed successful, while those near
+but not contributing are considered harmful. The others are not considered.
+The clauses are normalised wrt a certain lexicographic ordering, which ensures
+that results can be generalised to similar situations, with different symbols.
+
+The features are not generated per clause, but per *problem*.
+They include TPTP features (e.g. number of Horn clauses), as well as
+number of symbols of a certain arity.
+
+In a new proof, first a subset of previous proof experience is selected that
+corresponds to the given (new) problem. Then, the information from this
+proof experience is merged, giving for every clause the information in how
+many proofs it was used and how far away it was on average from the
+contributing clauses.
+
+When a new clause is to be evaluated for usefulness for the problem, it is
+looked up in the existing database, and if the same clause (modulo
+normalisation) was used before, the information is used.
+The information is combined with a traditional heuristic, which just counts
+symbols.
+
+
+Satallax compilation issues
+---------------------------
+
+Bug? Compiling Satallax 2.8 only works if I copy dllminisatinterface.so from Satallax 2.7 to bin. Else I get:
+
+~~~
+ocamlc  -I bin -o bin/satallax unix.cma /home/mfaerber/satallax-2.8/bin/dllminisatinterface.so bin/minisatinterface.cmo bin/syntax.cmo bin/config.cmo bin/flags.cmo bin/match.cmo bin/priorityqueue.cmo bin/state.cmo bin/search.cmo bin/refutation.cmo bin/flag.cmo bin/litcount.cmo bin/branch.cmo bin/step.cmo bin/suche.cmo bin/norm.cmo bin/translation.cmo bin/coq.cmo bin/latex.cmo bin/proofterm.cmo bin/coqlexer.cmo bin/coqparser.cmo bin/tptp_lexer.cmo bin/formula.cmo bin/tptp_config.cmo bin/tptp_parser.cmo bin/version.cmo bin/satallaxmain.cmo bin/satallax.cmo
+File "_none_", line 1:
+Error: Error on dynamically loaded library: /home/mfaerber/satallax-2.8/bin/dllminisatinterface.so: /home/mfaerber/satallax-2.8/bin/dllminisatinterface.so: undefined symbol: _ZTVN10__cxxabiv117__class_type_infoE
+~~~
+
+
+
+3.11.2015
+=========
+
+
+Random ideas
+------------
+
+Idea: Record all proof attempts by different strategies, and give higher weight to those proof steps according to the number of strategies that solved a problem
+For example, if only a single strategy was able to solve a problem, and only in this strategy, a certain axiom was used, give high importance to that axiom in conjunction with the problem parameters
+
+Probably, negative influences are a bad idea, because not having used an axiom probably does not indicate it has a negative influence on the proof.
+However, if for example many failed proof attempts did all use a certain axiom while all successful proofs did not use it, we might think about negatively discriminating this axiom.
+Perhaps introduce "bonus points" if the successful proofs are quite different, i.e. use different axioms.
+
+Use internal guidance only in conjunction with axioms or also for generated clauses?
+With generated clauses, we probably get quite a blowup in data, unless we do some clever filtering.
+For example, if we have a clause that is produced during the successful creation of proofs of many problems which share some characteristics (for example, some algebraic property), then upon encountering this clause among the active formulae, we could immediately give it a higher relevance on the priority queue. This means that the relevance might be influenced by how often a clause was encountered in successful proofs.
+
+Chad is uncomfortable with using fixed symbol names; use some kind of "holes", e.g. ?(x, y) /\ ?(y, z) ==> ?(x, z) for transitivity? How (or whether) to do this efficiently can probably be answered by Cezary / Thibault.
+OR: Look at Stephan's paper: "Learning Search Control Knowledge for Equational Theorem Proving" (2003).
+
+Combining clauses yielded by different strategies? (Better Together)
+This would require the estimation of "clause quality", for example: size of clause, number of variables, shared subterms with conjecture, ...
+Can we use machine learning for this?
+For example, we could do something like Stephan Schulz, where we allow some kind of language to specify in which situations we might use clauses from other strategies, depending on the state of both strategies and the clause itself. However, this is probably quite complicated, and I did not find information about this clause selection language. Ask Stephan?
+
+MaLeS uses some features such as "number of clauses", and then normalizes them such that some features are not incredibly overweighted.
+
+The ProcessProp1 command might be the most influential command, according to Chad.
+
+A nice interjection point to influence the selection of a processed proposition might be either:
+a) the insertWithPriority function in state.ml -- there, we could catch all insertWithPriority calls and filter for ProcessProp1 instances, which we could then influence accordingly. However, a potential problem is that in state.ml, we might not have access to all available data, such as the prover state. Verify this!
+b) the processSearchOption function in search.ml -- however, here we have the disadvantage that we have to wait for the command to be chosen by the priority queue, which kind of defeats the purpose of running some commands earlier than others
+So let's better go for option a. :)
+
+Verbosity > 8 -> gives me number of formulas!!
+
+Perhaps use priority of parent formula for child active formulae? Would require modification of getNext() to also return priority ...
+
+To discriminate active from passive: Hashtbl.mem processed
+Or go over atom_hash and filter out processed
+
+How about the other options, such as mating / confrontation? Do we have much of a choice there? Why is the choice of the right ProcessProp1 so influential and mating/conf. not? (Or perhaps it is?)
+
+Relevancy pruning is used in E, but we assume that this can be done as a preprocessing step before calling Satallax.
+
+Most imminent engineering tasks:
+
+- Extract state - clause pairs from proofs (or attempts thereof).
+- Define state of a prover (wrt machine learning).
+- Compress data?
+- Influence proof search at same points where we extracted state/clause pairs.
+
+So we probably need some flag for ML data recording and for ML data loading/using.
+Cezary's machine learners are usually made to load data in premise selection format, how is it done in FEMaLeCoP?
+
+TODO: Inspect size of priority queue! Also percentage of ProcessProp1 commands on it!
+
+We might also like to learn decision trees based on previous observations which clauses were selected based on which features. Random forest OMG.
+
+Chad suggested the following schema to record state-clause pairs:
+
+1. Run Satallax, recording hashes of every formula that is used.
+2. If a proof is found, keep those hashes of formulas that were actually used.
+3. Rerun Satallax, and write out information for all the proof states which match with a hash.
+
+This allows us to record the required information without modifying the existing data structures of Satallax.
+
+
+
+30.10.2015
+==========
+
+
+Satallax + LaTeX
+----------------
+
+Satallax can output LaTeX when
+
+    result_latex = true
+
+is set in src/pfterm/flag.ml. The LaTeX template is then:
+
+    \documentclass[12pt,a4paper,oneside,ngerman]{scrbook}
+    \usepackage{color}
+    \usepackage{stmaryrd}
+
+    \begin{document}
+    % insert Satallax proof here
+    \end{document}
+
+
+
 4.8.2015
 ========
 
