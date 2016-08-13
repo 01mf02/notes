@@ -2300,6 +2300,71 @@ algorithm is surely a benefit.
 
 
 
+26.3.2015
+=========
+
+
+cron
+----
+
+To automatically start the server revival script, I made a cron entry using
+`crontab -e` containing the following (viewed via `crontab -l`):
+
+~~~
+# Check at the beginning of every hour whether server is still running.
+0 * * * * ~/check_server.sh
+~~~
+
+
+
+25.3.2015
+=========
+
+
+Server restart script
+---------------------
+
+Because colo12 seems to have restarted some times recently, I had to write a
+script which checks if HH is running and starts the server if not.
+
+~~~ bash
+#!/bin/bash
+# Restart the HOL(y)Hammer server if it is not currently running.
+
+SRV_BIN=dist/build/server/server
+SRV_DIR=~/hh2/online
+
+if ! pgrep -f $SRV_BIN -u $USER > /dev/null
+then
+  echo "Starting HOL(y)Hammer server."
+  cd $SRV_DIR
+  nohup $SRV_BIN &> /dev/null &
+fi
+~~~
+
+For historical reasons, compare with the script for the original HH1 server:
+
+~~~ bash
+#!/bin/bash
+
+#########################################################################
+# Script to check if process 'hh_redirector' is running from user 'cek' #
+# Written by: bwinder #
+# Written on: 2014-02-14 ( Valentine's Day Edition ) #
+#########################################################################
+
+#Check if process 'hh_redirector' is running from user 'cek'
+process=`ps aux | grep '[.]/hh_redirector' | grep 'cek' | grep -v grep`
+
+if [ -z "$process" ]
+then
+#Run the process
+nohup /home/ami/cek/hh/hh_redirector &> /dev/null &
+fi
+~~~
+
+
+
 23.3.2015
 =========
 
@@ -2423,6 +2488,266 @@ look at this.
 
 
 
+12.3.2015
+=========
+
+
+Bugs, bugs, bugs
+----------------
+
+In today's meeting with Cezary, he was able to expose several bugs:
+
+* HOL4:
+    - &1 = 1+1
+    - 1+1
+* HOL Light:
+    - [] = []
+    - 1+1
+    - EVEN (length [])
+* Interface: When navigating to "files/bla.html" (and bla.html does not exist),
+  the user is redirected to the main page, but with a missing image. We should
+  display a "page not found" error instead.
+
+Furthermore, we discussed integrating Cezary's new web service in the new HH2.
+We agreed that Cezary could put HTML/JS files into the "files" directory,
+and the server would spawn processes that write to files, which the user
+can then request.
+We will also take the same approach for the existing HH2 infrastructure. That
+means that I will create a stand-alone program for HOL(y)Hammer that will
+implement the backend and write intermediate results to stdout. The starting
+server will then redirect stdout to some file (cache/hl/HL-Core/...), where the
+file name needs to be properly escaped.
+
+Finally, Cezary wants the different strategies to be activated on the server.
+He also told me that 'epclextract' was no longer needed with E 1.8. I want to
+investigate how to yield the right output from it then.
+
+
+
+11.3.2015
+=========
+
+
+Discussion with Cezary
+----------------------
+
+We discussed the HOL(y)Hammer online service. Cezary expressed concerns that:
+
+* The online service needs to be restarted for changes to be applied, thus
+  causing users to be deconnected.
+* He is currently not able to integrate new services into hh2.cl-informatik,
+  such as a LaTeX parser, because he cannot use PHP.
+* Type-checking messages could be more detailed.
+* The backend reimplements many things that have already been available, such
+  as calling provers, parsing etc.
+* The backend does not yet implement things such as reconstruction (via meson),
+  minimisation, and decision procedures.
+* The backend has an additional dependency on Haskell, which the original HH
+  did not have.
+* The server does currently not generate any log files about visitors and
+  entered conjectures.
+* HTML rendering of developments is not available. That was in the old server
+  for HOL Light, and Josef's tool also supports HOL4 (according to Cezary).
+
+He pointed out two main uses of HOL(y)Hammer versions: One that can be run on the
+server and which may be hard to set up, one that users can run locally and which
+should have a minimal number of dependencies for easy installation.
+
+As requirements, he wants the following features:
+
+* Fast conjecture parser outside the ITPs (using the .sx files)
+* Decision procedures
+* Strategies (different ATPs, premise selectors etc.)
+* Minimisation (optionally)
+* Reconstruction
+
+(Apparently, these features already exist for HOL Light in the "translate"
+subdirectory, and may even be used for HOL4 in the future.)
+
+Furthermore, the service should be extensible, allowing it to interfere with
+different "academic-wares" such as Josef's Perl scripts. ;)
+
+
+
+5.3.2015
+========
+
+
+Better PATH on colo12
+---------------------
+
+To not always have to write PATH=... at every command, I wrote the following
+into my ~/.bash_profile:
+
+~~~ bash
+PATH=/home/ami/cek/flyspeck-workbench2/ocaml/bin:$PATH
+PATH=/home/ami/cek/bin:$PATH
+PATH=/home/software/tct3/.cabal/bin/:$PATH
+PATH=$HOME/bin:$HOME/usr/bin:$PATH
+
+LD_LIBRARY_PATH=$HOME/usr/lib
+
+export PATH
+export LD_LIBRARY_PATH
+~~~
+
+
+Server binaries
+---------------
+
+Unfortunately, colo12 has only very old versions of software, especially of
+g++ and ocaml.
+To work around that, we can use the following workaround for OCaml:
+
+    PATH=/home/ami/cek/flyspeck-workbench2/ocaml/bin:$PATH
+
+And for g++ (watch out, the version here is also from 2013 and experimental!):
+
+    PATH=/home/ami/cek/bin:$PATH
+
+
+TODO list
+---------
+
+- [x] Install Thibault's new exports
+- [x] Normalize theorem names
+- [ ] Make password/user request on upload
+- [ ] If no proof found, return reliably
+- [x] If parse failed (e.g. HOL4 "!x:real. x = x"), return
+- [x] If no axioms used, say "No axioms required."
+- [x] Show that parsing worked
+- [ ] Write "about" page.
+- [ ] Add logos: UIBK, Nijmegen?
+- [x] Implement new strategies
+- [x] Fix parse for HL: "ODD x \/ ODD (x+1)"
+- [ ] Install Flyspeck
+- [x] Allquantify variables for HOL Light
+- [ ] Resolve HOL Light crash on exit
+
+
+HOL cheatsheet
+--------------
+
+* ~p = "not p"
+* x EXP 2 if x is natural
+* x pow 2 if x is rational or integer
+* abs(x) is absolute value
+
+
+
+27.2.2015
+=========
+
+
+Exporting conjectures from HOL Light
+------------------------------------
+
+Given a conjecture and a HOL Light corpus, we want to generate files that allow
+us to run a predictor on them, and generate a THF file from the predictions.
+
+The masterplan for this is:
+
+* Load a HOL Light checkpoint with the corpus pre-loaded.
+* Execute the following code (or something similar) in HOL Light:
+
+      let myfile = open_out "bla.thf";;
+      oc := my_file;;
+      let tm = ... (* see hh_svr.ml how to do that, or parse with Hl_parser? *)
+      term thf_syntax tm;; (* for this, look at export/hl/writer.ml *)
+      close_out oc;;
+
+  This should write the conjecture from 'tm' to "bla.thf".
+* Run hh_h4 on bla.thf with the corpus files from $CORPUSDIR/data.
+* The rest goes like with HOL4.
+
+
+Running E
+---------
+
+I looked at Thibault's "hh.sh" script in HOL(y)Hammer for HOL4. It runs a very
+ugly-looking Perl script "runepar2.pl", that is a wrapper for 'eprover' and
+'epclextract': 'eprover' basically generates a proof, and 'epclextract'
+displays it in a way that we can interpret it.
+Then, Thibault extracts from the resulting E proof the axioms which E has used
+from the given problem file. He also extracts whether the proof was successful.
+
+These tasks can be simplified:
+
+    ./eprover --auto --tstp-in -l4 --pcl-terms-compressed --pcl-compact $FILE
+
+will read $FILE in our format (which is TPTP 3) and write results to stdout.
+You can also use the flag
+
+    --cpu-limit <secs>
+
+to limit E's execution time to the specified amount in seconds.
+If we use
+
+    --memory-limit=Auto
+
+E will claim most of the physical memory of the machine. That is currently
+used in "runepar2.pl", but I am not sure whether this should done on a web
+server ...
+
+Then,
+
+    ./epclextract --tstp-out -f -C --competition-framing $FILE
+
+reads from $FILE an E proof and prints the necessary steps on stdout to prove
+the original conjecture.
+
+If the proof was successful, the output from 'epclextract' contains the line
+
+    # SZS status Theorem
+
+The axioms used are printed in lines such as:
+
+    fof(3, axiom,![X1]:(s(t_bool,X1)=s(t_bool,t)|s(t_bool,X1)=s(t_bool,f)),file('../tmpThreadId3562573/atp_in', aHLu_BOOLu_CASES)).
+
+The resulting axiom is HL_BOOL_CASES. The transformation seems to be given in
+the function 'unescape_hh' from Thibault's "thfWriter.sml".
+Question to Thibault: Will this format stay the same with your new version of
+HOL4 export?
+
+
+
+26.2.2015
+=========
+
+
+Stackage
+--------
+
+To avoid Cabal hell in the future, I now use Stackage as default package
+repository for Haskell.
+
+In my ~/.cabal/config file, I have now lines like the following:
+
+    -- remote-repo: hackage.haskell.org:http://hackage.haskell.org/packages/archive
+    remote-repo: stackage-lts-1.9:http://www.stackage.org/snapshot/lts-1.9
+
+This restricts us to installing *only* Stackage-approved packages in standard
+Haskell environments. However, we require some non-Stackage packages for the
+HOL(y)Hammer server, so we create a sandbox in the "online" directory via
+
+    cabal sandbox init
+
+and put the following into a new "cabal.config" in the "online" directory:
+
+    remote-repo: hackage.haskell.org:http://hackage.haskell.org/packages/archive
+
+Then follows the contents of cabal.config from:
+
+    http://www.stackage.org/snapshot/lts-1.9
+
+That way, we enjoy the package constraints from Stackage, but we can also
+install additional packages when we see fit.
+
+Note that it makes sense to install src-haskell-exts system-wide (via apt-get
+or similar), because otherwise that package takes ages to install ...
+
+
+
 20.2.2015
 =========
 
@@ -2518,6 +2843,25 @@ To plot in Gnuplot the inverse path score, one uses a command like:
 
 
 
+11.2.2015
+=========
+
+
+Checkpointing HOL4
+------------------
+
+I tried to checkpoint HOL4 with dmtcp to have a uniform way of creating
+checkpoints between HOL4 and HOL Light, but this turned out to be a real bitch.
+The problem was the HOL4 creates files of the format ~/.polyml/poly-stats-$pid,
+and deletes them again as soon as it quits. However, when rerunning a
+checkpointed HOL4 instance, it would not find its corresponding poly-stats-$pid,
+because its original instance would have quit and deleted it. After fiddling
+with this for four hours, I discovered the really nice interface of Poly/ML to
+checkpoint it natively, and now I'm happily using this. It seems to work well
+with HOL4 so far.
+
+
+
 10.2.2015
 =========
 
@@ -2537,6 +2881,180 @@ slower than IntMap, as can be read in:
 
 The other option would be to use a package like `enummapset`, which wraps
 Data.IntMap for usage with Enum types.
+
+
+Nice interface
+--------------
+
+Discovered an interesting online service, whose interface has some great ideas:
+
+http://lindat.mff.cuni.cz/services/morphodita/
+
+En plus, c'est Tchèque. :)
+
+
+
+9.2.2015
+========
+
+
+Predictor pt. 2
+---------------
+
+I found out the format which Thibault's predictor expects. You need a directory
+called "theories", in which the predictor needs some files:
+
+* conjecture: Contains a conjecture, in tt(..) format. How to generate this?
+* thygraph: has to be given as second argument to write_thf_thyl() in HOL4
+
+An example conjecture:
+  tt(conjecture, conjecture, (prim__rec/_3C num/0 (arithmetic/NUMERAL (arithmetic/BIT1 arithmetic/ZERO)))).
+
+The predictor hh_h4 needs to be called from the directory "translate".
+In this directory, there has to be a directory "predictions", where predictions
+and intermediate files are written to. The final result is available in
+"predictions/predict_hh_out".
+
+I'm quite pissed that I have to find out all of this by trial-and-error.
+
+
+Predictor
+---------
+
+"Le petit outil", as I like to call it, has trouble avancing.
+This is the utility that should read .p / .hd files and a conjecture, then
+output usable premises for the conjecture. Thibault originally agreed to write
+this for me, but after discussing it today, he said he did not have time. :~|
+
+It turns out that the codebase is really badly documented, and in general a
+pain to work with. The file in question is translate/main_h4.ml, which Thibault
+originally advertised as usable also for predictions with HOL Light, but I'm not
+so sure about this anymore, because in this file several files related to HOL4
+export are mentioned.
+Even only looking at this gives me the shivers. I have literally no clue which
+file in translate/ is responsible for what. That's really demotivating.
+
+
+Exporting from HOL 4 reloaded
+-----------------------------
+
+So I did now actually try the HOL 4 export. This worked relatively painlessly.
+
+~~~
+load "thfWriter";
+
+(* copied from holyHammer.sml *)
+fun current_thyl () = mk_set (map (fst o fst) (DB.listDB()));
+
+(* first parameter is directory where features/dependencies are written,
+   second parameter is file where theory order is written *)
+thfWriter.write_thf_thyl "theoryname" "theoryname.deps" (current_thyl());
+~~~
+
+This creates in the current working directory a new directory "theoryname",
+into which the file "theoryname.deps" and the .p / .hd files are written.
+
+According to Thibault, one should be able to load a custom theory before
+"thfWriter", then the theory writing should consider the custom theory.
+
+I integrated this procedure into a Haskell script, which can now automatically
+load theories and export data from them. \o/
+
+
+
+6.2.2015
+========
+
+
+Existing corpora
+----------------
+
+I tried to build several proof corpora for HOL Light.
+
+* Gödel's incompleteness theorem: Fails in phase 2 with exception "pD".
+* Model of HOL: Same as above.
+
+The reason for this was that the "data" directory was not exported. This was due
+to the fact that I ran in OCaml the command:
+
+    #use "make.ml";; hist_save();;
+
+However, I learned the hard way that `hist_save();;` was not executed, probably
+because it was on the same line as the preprocessor directive. OCaml really
+makes you shoot yourself in the foot here by not warning at all.
+
+With this fixed, I was able to successfully build the following corpora:
+
+* Model of HOL
+* Gödel's incompleteness theorem
+* Boyer-Moore
+
+For all of these, also data was exported correctly! One thing for which to
+watch out for is that when one creates a checkpoint for a corpus, one has
+to watch out that no checkpoint previously exists there, because otherwise
+the new OCaml instance is getting added to the previous one, and you cannot
+write input to any of the OCaml instances anymore. For this reason, I now
+simply delete all previous checkpoints and also data directories from all
+corpora before exporting data.
+
+An annoyance is that the exported data gets very long paths; for example,
+I have the very nice path
+
+    ~/Dokumente/Uni/2014WS/hh2/online/corpora/hl/Model\ of\ HOL/data/home/michi/Dokumente/Uni/2014WS/hh2/online/corpora/hl/Model\ of\ HOL/Model/
+
+due to the function `noholname` in historian?.ml stripping away only the HOL
+directory prefix, but not the prefix of the corpus. It remains to clarify
+whether we should change this behaviour or if that could create name clashes.
+
+
+5.2.2015
+========
+
+
+DMTCP
+-----
+
+I found out how to properly utilise DMTCP to checkpoint OCaml code.
+Basically, one calls ocaml with `dmtcp_checkpoint ocaml`, and from the OCaml
+session you call `dmtcp_command --checkpoint`, which creates the checkpoint.
+Then, to take up again an existing checkpoint, you call `dmtcp_restart $CKPT`,
+and when you call the checkpointing command from OCaml again, the existing
+checkpoint gets updated.
+Most conveniently, when you run the checkpoint from a different directory, it
+also changes its current working directory (cwd) to the new directory.
+
+
+Recording proof dependencies in HOL Light
+-----------------------------------------
+
+I found out how to record proof data from new external libraries.
+
+The first step writes .statements files to "data":
+
+~~~
+rm fusion.ml
+ln -s write/fusion1.ml fusion.ml
+echo -e '#use "write/hol1.ml";; \n#use "$THEORY/make.ml";; \nhist_save();;\n' | ocaml
+~~~
+
+The second step writes the desired .p (theorems) and .hd (dependencies) files:
+
+~~~
+rm fusion.ml
+ln -s write/fusion2.ml fusion.ml
+echo -e '#use "write/hol2.ml";; \n#use "$THEORY/make.ml";;' | ocaml
+~~~
+
+It is important to note that in the second step, for every theory for which
+.statements files exist, the desired .p and .hd files are created.
+
+That means that the "delta step" for the both phases are:
+
+    #use "$THEORY/make.ml;; hist_save();;
+
+respectively
+
+    #use "$THEORY/make.ml;;
 
 
 
@@ -2586,6 +3104,38 @@ number of labels.
 
 
 
+Exporting from HOL Light
+------------------------
+
+First, how to install HOL Light?
+
+~~~
+sudo apt-get install ocaml camlp5
+svn co http://hol-light.googlecode.com/svn/trunk hollight
+cd hollight
+make
+~~~
+
+Then, it is time to bring in Cezary's dependency tracking:
+
+~~~
+ln -s ../../export/hollight write
+
+rm fusion.ml
+ln -s write/fusion1.ml fusion.ml
+echo -e '#use "write/hol1.ml";; \nhist_save();;\n' | ocaml
+
+rm fusion.ml
+ln -s write/fusion2.ml fusion.ml
+echo -e '#use "write/hol2.ml";; \n' | ocaml
+~~~
+
+This creates a directory "data", where the information about theorems is saved.
+There, also some OMDoc documentation is stored, but it does not seem to be
+directly usable as HTML documentation. How to do the latter?
+
+
+
 2.2.2015
 ========
 
@@ -2609,6 +3159,121 @@ k-NN Paper
 
 Stronger Automation for Flyspeck by Feature Weighting and Strategy Evolution:
 <http://cl-informatik.uibk.ac.at/workspace/publications/13pxtp2.pdf>
+
+
+CICM
+----
+
+http://cicm-conference.org/2015/cicm.php
+
+Abstract submission deadline: 16 February 2015
+Submission deadline: 23 February 2015
+
+
+Export from HOL 4
+-----------------
+
+I talked with Thibault, who gave me advice on how to export from HOL 4:
+He has forked HOL 4, which one obtains by:
+
+    git clone https://github.com/barakeel/HOL
+
+Building is the same as I wrote yesterday.
+To export data (here for an example theory "euclid.sml", one runs `bin/hol` with
+the following input:
+
+~~~
+load "euclid";
+load "thfWriter";
+
+(* copied from holyHammer.sml *)
+fun current_thyl () = mk_set (map (fst o fst) (DB.listDB()));
+
+(* first parameter is directory where features/dependencies are written,
+   second parameter is file where theory order is written *)
+thfWriter.write_thf_thyl "euclid" "euclid.deps";
+~~~
+
+Note that absolute paths should be used, because Thibault's code can change the
+current working directory.
+
+Thibault told me he would update the current HOL fork to be much better, which
+should among others eliminate the need to redeclare `current_thyl`. If it is not
+online until 9.2., I have official permission from him to slap him. :)
+
+
+
+1.2.2015
+========
+
+
+HOL Light documentation
+-----------------------
+
+I found out that a hand-rolled Perl script is used right now to generate
+documentation for proof corpora. Is it desirable to replace this with something
+more "official"? :)
+
+Actually, how many people really use the current documentation pages on colo12?
+
+
+HOL 4
+-----
+
+When installing HOL 4, I first wanted to use Ubuntu's Poly/ML packages (5.2.1),
+but it soon turned out that HOL 4 failed to compile with this.
+(Build segfaults.)
+
+I then used Poly/ML 5.5.2 from the Poly/ML website and compiled with:
+
+./configure --prefix=/usr --enable-shared
+make
+sudo make install
+
+Then, I compiled HOL 4 with:
+
+poly < tools/smart-configure.sml
+bin/build
+
+
+
+30.1.2015
+=========
+
+
+Happstack
+---------
+
+I consider using Happstack instead of the previous PHP version, because I don't
+know PHP and don't want to learn something new that I consider to be crappy. :)
+
+However, I'm having trouble installing Happstack on colo12, as there seem to be
+a Cabal version installed which has trouble installing Happstack, and even
+updating itself does not seem to work.
+See: https://github.com/haskell/cabal/issues/1137
+
+However, Benni told me that he considers installing a new server soon, on which
+a different Cabal version would be available. Let's see.
+
+
+
+29.1.2015
+=========
+
+HOL(y)Hammer: Online ATP Service for HOL Light
+http://arxiv.org/pdf/1309.4962v1.pdf
+
+Requirements:
+- OCaml
+- dmtcp (used to checkpoint OCaml instances)
+
+The following command does not seem to work --- why?
+
+~~~ bash
+echo '&1 + &1 = &2' | nc colo12-c703.uibk.ac.at 8080
+~~~
+
+Where does the `sorter` program in bin/ come from?
 
 
 
