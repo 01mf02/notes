@@ -1,3 +1,51 @@
+15.8.2016
+=========
+
+
+Monte Carlo leanCoP preparations
+--------------------------------
+
+I decided to integrate some simple probabilistic heuristics in leanCoP
+that go beyond the ideas that were tried in randoCoP.
+For example, the selection of a contrapositive should assign a weight
+to each contrapositive (e.g. using k-NN with the active path symbols)
+and then, a contrapositive is drawn with a certain probability
+based on the weight.
+To copy some ideas from the whiteboard:
+
+* The more other choices exist, the lower the chance for a deep path.
+* The more effort parallel subgoals took (e.g. number of different
+  contrapositives tried, or number or inferences per subgoal),
+  the higher the chance for doing more effort in current subgoal
+  (e.g. higher path limit, more different options tried).
+* We can learn how much effort it takes to discharge
+  subgoals of a certain clause. This could influence the depth probability.
+* Is completeness maintained?
+
+To start this off, I want to begin with a clean leanCoP implementation
+that I can easily understand and modify. For this, I took the leanCoP
+implementation in the repository and compared it with FeMaLeCoP,
+trying to synchronise them such that `diff` reports few differences.
+The OCaml leanCoP has the nice feature that it reports which strategy
+succeeded, but it did not output the proof.
+I adapted FeMaLeCoP that it now also outputs the used strategy and
+leanCoP that it outputs proofs.
+Furthermore, to be able to access the option in leanCoP about the
+proofs of "parallel" subgoals, I believe it is necessary to let go
+of the continuation passing. However, I need to make sure that this
+still works with the cut.
+
+
+`ocamlopt` flags
+----------------
+
+I found the solution to my `ocamlopt` problem from 10.8.2016.
+One can pass options to `ocamlbuild` such as:
+
+    ocamlbuild -ocamlopt "ocamlopt -unsafe -inline 100" $(FILE)
+
+
+
 12.8.2016
 =========
 
