@@ -1,3 +1,64 @@
+16.8.2016
+=========
+
+
+Discussion with Josef
+---------------------
+
+* Monte Carlo: Josef pointed out that in Monte Carlo based tree search,
+  one should try different random paths with limited depth,
+  learn from these explorations, then continue the search deeper,
+  integrating the best elements from the sample explorations.
+  The problem lies in the evaluation function: What is a promising path?
+  In the beginning, one could just check how many subgoals there are
+  on the path.
+* Josef pointed out that it might be beneficial to first treat subgoals
+  that look hard to refute. If the refutation for this fails,
+  one does not need to consider the parallel subgoals any more.
+* Model checking: Using a model checker such as in MaLARea could help
+  in two ways: First, if the model checker finds that some subgoal a
+  is actually satisfiable, then the whole clause cannot be refuted
+  and all alternative subgoals fail.
+  Second, if the model checker finds a subgoal a unsatisfiable,
+  the theorem prover can go work on a different subgoal first,
+  because it estimates that a can be refuted later.
+* DeepMath / HoloPhrasm: We discussed neural networks,
+  and Josef expressed the hope that they could replace the human intuition
+  to check whether a proof is currently going in the right direction.
+  I think he mentioned recurrent neural networks which could do
+  classification of textual examples.
+  Browsing on the internet, I stumbled over this quite nice presentation:
+  <http://www.coling-2014.org/COLING%202014%20Tutorial-fix%20-%20Tomas%20Mikolov.pdf>
+
+
+Lazy lists
+----------
+
+I analysed the leanCoP source code and found that enumerating
+different possibilities should probably best be done with lazy lists.
+However, the lazy lists in the OCaml standard library,
+<http://caml.inria.fr/pub/docs/manual-ocaml/libref/Stream.html>,
+seem to be quite awkward to use; on the other hand,
+OCaml Batteries has a quite nice lazy list module,
+seems reasonably documented and can be installed in Ubuntu via
+
+    apt-get install ocaml-batteries-included
+
+One should also place
+<https://github.com/ocaml-batteries-team/batteries-included/blob/master/ocamlinit>
+in the source directory. While already at it, one can also write
+
+    #directory "_build";;
+
+into that file so that when running a toplevel version of the code,
+one does not always change into the build directory before opening modules.
+
+Anyway, I created a first version of leanCoP with lazy lists that already claims
+to prove PUZ001-1.p, but the number of inferences looks suspiciously small.
+To be investigated.
+
+
+
 15.8.2016
 =========
 
