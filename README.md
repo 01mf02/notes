@@ -1,3 +1,109 @@
+17.8.2016
+=========
+
+
+Testing monteCoP
+----------------
+
+To test ATPs on the CNF/FOF problems (containing '+' or '-'
+in the filename) in TPTP, I created a Makefile:
+
+~~~ makefile
+# input files (FOF/CNF TPTP files contain either + or - in filename)
+INFILES=$(shell find in/ -type f -regex ".*\(\+\|-\).*\.p" | sort -R)
+
+# timeout (in seconds)
+TIME=5
+
+all: solved/leancop solved/montecop
+
+out/leancop: $(patsubst in/%,out/leancop/%,$(INFILES))
+out/leancop/%: in/%
+	@mkdir -p "`dirname $@`"
+	-timeout $(TIME) ../leancop.native "$<" > "$@"
+
+out/montecop: $(patsubst in/%,out/montecop/%,$(INFILES))
+out/montecop/%: in/%
+	@mkdir -p "`dirname $@`"
+	-timeout $(TIME) ../montecop.native "$<" > "$@"
+
+# collect solved files for a given prover
+solved/%: out/%
+	@mkdir -p "`dirname $@`"
+	grep -rl $< -e "Theorem" | xargs -L1 basename | sort > "$@"
+~~~
+
+We can compare the results via:
+
+    comm solved/*
+
+I see that 43 problems are solved by both monteCoP and leanCoP,
+but 6 problems were solved only by leanCoP and 3 only by monteCoP.
+Furthermore, for example the file "PUZ047-1.p" shows that monteCoP needed
+a lower number of inferences than leanCoP.
+
+* monteCoP: Inf: 4325 Depth: 7 DInf: 705 Str: 2
+* leanCoP: Inf: 5432 Depth: 7 DInf: 1507 Str: 2
+
+Looking at some of the files, my hypothesis was that monteCoP still performs
+fewer inferences in the same time than leanCoP.
+We can output the number of inferences for all problems via:
+
+    grep -r out/montecop/ -e "Inf" | cut -d ' ' -f 3 | sort -n
+
+Saving the results into files `lc` and `mc`, we can visualise them via:
+
+    gnuplot -persist -e "plot 'mc', 'lc'"
+
+The plot clearly shows that leanCoP is able to perform more inferences
+than monteCoP. So what is holding back monteCoP?
+
+Note: monteCoP is currently not doing anything like Monte-Carlo tree search,
+however it is the implementation based on lazy lists that should be
+enhanced by Monte-Carlo elements.
+
+
+Common Lisp
+-----------
+
+Out of curiosity I wanted to learn some Lisp, probably because
+Chad impressed me with his amazingly fast in-console text manipulation.
+I chose to follow <http://lisp.plasticki.com/>, where I got until
+the section about strings. Here are my solutions.
+
+~~~ commonlisp
+(defun square (x) (* x x))
+(defun triangular (n) (/ (* n (+ n 1)) 2))
+(defun dice () (+ 1 (random 6)))
+(defun two-dice () (list (dice) (dice)))
+
+(defparameter *km-miles* 0.621371192)
+(defun convert-km (km) (* km *km-miles*))
+(defun convert-miles (miles) (/ miles *km-miles*))
+
+(defun average3 (a b c) (/ (+ a b c) 3))
+(defun cubesum (a b) (let* ((sum (+ a b))) (* sum sum sum)))
+(defun pseudo-primes (x) (+ (- (* x x) x) 41))
+
+(defun swap (l) (cons (second l) (cons (first l) (rest (rest l)))))
+(defun dup (l) (let* ((fst (first l))) (cons fst (cons fst (rest l)))))
+(defun random-elt (l) (nth (random (length l)) l))
+(defun last-elt (l) (nth (- (length l) 1) l)
+
+(defun midverse (s)
+  (let* ((l (length s)))
+    (concatenate 'string
+      (subseq s 0 1)
+      (reverse (subseq s 1 (- l 1)))
+      (subseq s (- l 1) l))))
+(defun rotate (s n) (concatenate 'string (subseq s n) (subseq s 0 n)))
+~~~
+
+Fun fact: After doing these exercises, my shift key would work less reliably
+due to typing so many parentheses. :)
+
+
+
 16.8.2016
 =========
 
