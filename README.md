@@ -1,3 +1,78 @@
+18.8.2016
+=========
+
+
+Large problems
+--------------
+
+Some problems, such as PUZ015-2.006.p, produce quite large proofs (about 500M),
+which causes the proof printing to be killed when a timeout is set.
+
+
+`cut1`
+------
+
+I realised that the contination-style leanCoP can safely cut the
+literal proving if the negated literal is among the lemmas.
+This is activated by the `cut1` flag.
+I implemented the same functionality in monteCoP, which gives a
+slight increase of inferences, but unfortunately not more solved problems.
+
+I also measured the total number of inferences per prover on the PUZ problems
+via the amazing command
+
+    paste -s -d+ | bc
+
+and the results are that monteCoP without cut after successful lemma step
+gives 61,130,086, monteCoP with this cut gives 69,721,307, and
+leanCoP (OCaml version) gives 180,159,238.
+
+Furthermore, I implemented the `cut1` in the original Prolog leanCoP 2.1,
+where it increases the number of solved problems in the PUZ category
+without axioms from 11 to 13. I notified Jens about this.
+
+
+Lazy list speed
+---------------
+
+Because the number of inferences of the lazy list version of leanCoP
+is so much lower than the continuation passing style version, I thought
+the culprit could be that fact that the potential contrapositives were
+always retrieved, even if the lemma or the path rule would find a proof.
+To test this hypothesis, I made a function that can be used to construct
+a lazy list from a lazily passed strict list.
+
+~~~ ocaml
+let list_fun (f : 'a list Lazy.t) : unit -> 'a option =
+  let l = ref f in
+  fun () -> match Lazy.force !l with x::xs -> l := lazy xs; Some x | [] -> None
+~~~
+
+You can use it for example via
+
+    let x = list_fun (lazy (print_endline "Hi"; [1; 2])) |> LazyList.from_while;;
+
+which returns an `int LazyList.t`, but does not compute the actual list yet,
+unlike `LazyList.of_list`.
+I also contributed my function to the OCaml Batteries team at
+<https://github.com/ocaml-batteries-team/batteries-included/issues/687>.
+
+Unfortunately, the version of monteCoP using this technique to delay
+the contrapositive calculation until needed seems to be slower than
+just finding the contrapositives strictly.
+In particular, the number of inferences performed on PUZ054-1.p
+drops from 1,249,780 to 1,199,180, whereas the continuation passing leanCoP
+achieves 2,304,523.
+
+A further speed increase is obtained by saving the database entries already
+as lazy lists, which prevents us from having to convert to lazy lists
+every time we obtain a database entry.
+Furthermore, it seems that there really is a difference between
+`LazyList.of_list` and `LazyList.eager_of_list`, where using the latter
+can make the whole program about 5%-10% faster.
+
+
+
 17.8.2016
 =========
 
