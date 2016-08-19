@@ -1,3 +1,90 @@
+19.8.2016
+=========
+
+
+Debugging leanCoP
+-----------------
+
+Running some TPTP problems in leanCoP would result in error messages like
+
+~~~
+calling an undefined procedure f(_3116) in module eclipse
+abort
+~~~
+
+I debugged this together with Jiří. First, we found out that putting
+simple `print` commands did not print anything. Printing to stderr
+was the solution:
+
+~~~ prolog
+write(user_error, 'Hello World'), nl.
+~~~
+
+We finally traced the problem to leanCoP not being able to parse CNF files.
+I'm sorry, but: Aargh!
+To solve this (and the fact that the OCaml leanCoPs cannot parse `include`
+statements), I built into the Makefile a rule that converts all input problems
+to FOF with includes expanded:
+
+~~~ makefile
+fof/%: tptp/%
+	@mkdir -p "`dirname $@`"
+	./tptp4X -x -t fofify "$<" > "$@"
+~~~
+
+The next strange error were Prolog messages of the form
+
+    ERROR: Out of global stack
+
+on the server. A call to
+
+    ulimit -a
+
+showed that the stack size was set to a rather low value of 8MB.
+For future runs of Prolog, I should set it to:
+
+    ulimit -s unlimited
+
+Next, I compared the performance of leanCoP 2.1 with a version where
+I modified the lemma rule from
+
+    member(LitL,Lem), Lit==LitL, Cla1=[], Proof1=[]
+
+to
+
+    member(LitL,Lem), Lit==LitL, Cla1=[], Proof1=[], !
+
+On the first evaluation on the server grid02 (with 32 instances running
+in parallel) on all FOF TPTP problems, both versions proved roughly
+the same number of problems, but different ones.
+Therefore, I reran both provers only on the problems that they could not solve,
+but the other one could. For this, I just deleted all the logs of
+these problem via
+
+    for i in `comm -23 solved/leancop-2.1 solved/leancop-2.1-cut1`; do find out/leancop-2.1-cut1/ -name $i -exec rm \{\} \;; done
+
+and reran `make`. The result was quite surprising:
+
+~~~
+mf@grid02:~/cop/eval$ wc -l solved/leancop-2.1*
+ 1985 solved/leancop-2.1
+ 1985 solved/leancop-2.1-cut1
+~~~
+
+So actually the cut1 does not seem to have a great influence on the
+performance of leanCoP on the TPTP problems. This seems counter-intuitive
+to me, and I cannot exclude the possibility of me having made a mistake
+somewhere during the evaluation, although I rechecked everything.
+By the way, also the problems solved by both provers were nearly exactly
+the same, with 1983 problems being solved by both provers.
+
+Next, I did a similar evaluation on the PUZ problems for OCaml leanCoP and
+monteCoP. Here, at first leanCoP proved 55 problems and monteCoP 53,
+but once I reran both provers on the problems that only the other prover solved,
+it was 55 against 55.
+
+
+
 18.8.2016
 =========
 
