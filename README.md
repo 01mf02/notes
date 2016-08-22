@@ -1,3 +1,24 @@
+22.8.2016
+=========
+
+
+Frustration
+-----------
+
+I tried to return statistics for every proof and subproof.
+This proved to be amazingly difficult and complicated the whole code a lot,
+to an extent that it feels like twice as big and actually contains an error
+that I was not able to find for hours, namely that the inferences are not
+counted correctly.
+I am thinking of calculating the statistics on demand only when I actually
+need them, saving the proof attempts along with the actual proof so I can
+analyse them.
+Josef also suggested implementing the Monte-Carlo algorithm in Prolog or
+in case of extreme desperation just printing the inference information
+to stdout and parsing it from there. I am not *that* desperate, however ... :)
+
+
+
 19.8.2016
 =========
 
