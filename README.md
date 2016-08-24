@@ -1,3 +1,69 @@
+24.8.2016
+=========
+
+
+Proof attempts
+--------------
+
+I have implemented a version of lazyCoP that is able to save also
+parts of the proof that did *not* contribute to the final proof.
+This works much better than calculating the statistics during
+the proof search and then combining them at every step.
+The final number of inferences is equivalent to the number of inferences
+according to the imperatively calculated number.
+Unfortunately, the new version takes longer to prove -- for one problem,
+the old version took about 0.8s, whereas the new version took 2.4s.
+However, it is probably too early to care much about this,
+especially as on the PUZ category of TPTP, the new version still proves
+52 problems, in contrast to 54 problems of the old version.
+As a little bonus feature, I made coloured proof output that differentiates
+between used and unused proof parts. Probably even cooler would be some
+graph output, but as Josef said, it probably takes too much time to make,
+and the current representation is nice already.
+
+Josef suggested to learn from previous proofs a matrix where for every clause
+the number of its occurrences in the proof-relevant and proof-irrelevant part
+would be stored.
+This information could be used in an evaluation heuristic for Monte-Carlo
+tree search. The disadvantage is that is would be dependent on previously
+analysed proofs. For that reason, I am tempted to try easier heuristics first.
+
+Josef suggested to try to find out which literals are the hardest to refute
+in a clause, and evaluate the Monte-Carlo tree search on these literals.
+How to find out the refutability hardness of literals?
+One way could be to learn this from previous proofs.
+On the other hand, it might be that refuting an "easy" literal restricts
+the search space for the hard literal (via the substitution) such that
+the hard literal actually becomes easy. For that reason, one could try
+to estimate the influence of literals on each other, eventually during
+Monte-Carlo tree search as well. But this is probably quite complicated.
+
+One of my ideas was to try to refute random literals from a clause,
+and resume the search that produced the most unlikely proof, i.e.
+a proof of a literal that is unique (no other searches refuted it)
+and had a low probability of being found, because it consisted of
+many choices. The probability is the inverse of the product of
+the cardinalities of the unifying clauses along the path.
+
+Another interesting way to evaluate partial proof trees is to
+measure the number of different possibilities to refute all subgoals,
+possibly combining this also with learnt information which potentially
+unifying clauses have contributed in the past to most refutations.
+
+What role should features of a partial proof tree play?
+
+Neural networks could be another way to find the most promising
+proof attempt. However, I think their evaluation should be postponed
+until I have somebody at my disposal who is experienced with neural networks.
+According to Josef, when Cezary will be back from the US,
+he might have that experience.
+
+Another problem consists in how to resume a partial proof search.
+Chad suggested the use of zippers to represent "proofs with holes" as in
+<https://en.wikipedia.org/wiki/Zipper_(data_structure)>.
+
+
+
 22.8.2016
 =========
 
