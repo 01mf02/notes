@@ -1,3 +1,34 @@
+25.8.2016
+=========
+
+
+Resuming proof attempts
+-----------------------
+
+If different (random) proof search trees are to be tried, evaluated and then
+potentially resumed, it is probably best to resume a proof search by
+characterising each Monte Carlo tree with the associated seed and then run
+that again. No need for continuations or something fancy. :)
+
+I read "Learning Heuristics for a Theorem Prover using Back Propagation"
+(Ertel et al., 1989). The authors seem to use simple neural networks to
+learn the optimal maximal proof search depth.
+I also read parts of "Integrating Rule Based Reasoning and Neural Networks"
+(Ertel et al., 1995), which proposes hybrid models combining inductive and
+deductive reasoning. They give medical systems as an example, where data
+from patients (inductive) and rules from doctors (deductive) are available.
+The authors argue that probabilistic models are inherently hybrid.
+In that article, the authors also use a neural network (LRAAM)
+to classify terms, to assign meaningful and discriminating features to terms.
+
+However, unlike <https://en.wikipedia.org/wiki/Monte_Carlo_tree_search>
+is claiming, it seems that Ertel et al. did not use Monte Carlo tree search,
+because they just evaluate possible options in a proof search using
+previously learnt knowledge, but they are not actually attempting
+different proofs inside the same proof search, then evaluating those.
+
+
+
 24.8.2016
 =========
 
