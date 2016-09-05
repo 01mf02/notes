@@ -1,3 +1,232 @@
+5.9.2016
+========
+
+
+UCT bug
+-------
+
+In our weekly Monday meeting, I presented my view of how UCT works.
+Among others, I said that the reward of a tree state is the
+sum of the rewards of its children. At this point Josef and Jiří
+were expressing their concern that the reward should be more likely
+the average or the maximum child reward.
+It turns out that in the UCT paper, average rewards are used,
+so I changed my implementation.
+The TSP problem benchmark now gives a lowest path length of 39,062,
+whereas it was previously 39,087.
+However, to obtain this path length, it was necessary to get the
+best state by average reward and not by number of visits.
+For example, when printing on every iteration the best state by reward,
+we obtain 452 solutions with a path length below 40000, however
+only a single solution when we get the best state by number of visits,
+and that solution is worse than the best other solution.
+
+*Update*: Brought it down to 38,721 by setting $c_p$ to 0.
+That goes a bit against the "Monte Carlo spirit", but I'll test
+whether I can get better results with a somewhat changed parameter set.
+Josef pointed out to me that in the UCT paper, a $c_p$ value of
+1/sqrt 2 is said to satisfy the tail conditions; however, this assumes
+that the rewards lie in the interval [0, 1], which is currently
+not the case for our formulation of the TSP problem.
+So I will test a new characterisation of the TSP with normed reward.
+
+
+
+3.9.2016
+========
+
+
+List-based vs. array-based substitution
+---------------------------------------
+
+I tested stateCoP with a timeout of five seconds on the TPTP puzzle problems,
+where it solved only 42 problems solved.
+To find out whether this is due to the new list-based substitution,
+I also ran lazyCoP with list- and array-based substitutions on
+the same problems, with the result that the array-based one solved
+54 and the list-based one solved 56 problems! This was rather unexpected.
+Furthermore, the 56 problems are not a superset of the 54 problems.
+
+I concluded that the worse performance of stateCoP is due to the
+strict evaluation of all extension step options.
+It will be interesting to see how much UCT is able to improve upon this.
+
+
+Simplifying UCT
+---------------
+
+I noticed that a UCT problem can be simply characterised by yielding the
+potential successor states plus their rewards, given the current state.
+This eliminates the need to talk about actions that can be used to
+transform the current state into a successor state.
+Furthermore, I noted that my usage of lens functions in the Haskell version
+could be easily omitted without blowing up the program size.
+The previous Haskell version took 2394 bytes, whereas the new one only takes
+2068 bytes.
+
+
+
+2.9.2016
+========
+
+
+stateCoP
+--------
+
+I started and finished a version of leanCoP that is a mixture of
+contiCoP and lazyCoP, which I called stateCoP.
+From contiCoP comes the capability to carry around the proof obligations,
+but stateCoP does it by saving a list of open goals. This way,
+the proof obligations can be easily analysed.
+From lazyCoP comes the idea that the subsequent possible proof steps
+are returned as a list of successor states. Currently, this is returned
+as a strict list, because in UCT, it is in general necessary to
+evaluate all possible options before deciding for one.
+This might hurt performance, but could be optimised later.
+
+The unique feature of stateCoP is that it only always executes a single
+inference step, and then returns the successor states.
+This makes it possible to easily integrate it into UCT.
+A full, iterative proof-search can be expressed as a one-liner.
+
+However, it is not possible to use the previously used array-based substitution
+mechanism, because stateCoP will always first try to find all possible
+extension steps (thus unifying the current literal with all corresponding
+literals in the matrix), then work off all the options one after the other.
+However, in doing so, it can happen that the unification information about
+later extension steps is overwritten after the first extension step has been
+evaluated.
+
+Adapting the array-based substitution to remedy this problem seemed hard,
+so I migrated to a list-based substitution, which is completely functional
+and does not carry around a global substitution.
+After implementing this, stateCoP worked.
+
+
+
+31.8.2016
+=========
+
+
+Emacs adventure
+---------------
+
+I was curious and wanted to try Emacs.
+Unfortunately, after following some sections of the tutorial,
+I felt strong pain in my left hand, probably stemming from the
+repeated usage of the CTRL key. Looking for "emacs rsi" on the internet,
+one can obtain lots of people complaining about it.
+I even considered for some minutes getting a foot pedal to simulate keypresses,
+but if you need a foot pedal to use an editor,
+you should probably not use the editor in the first place.
+
+
+OCaml UCT
+---------
+
+I implemented UCT in OCaml.
+While testing it, I noted that `LazyList.take` from OCaml Batteries is not lazy.
+I reported this at <https://github.com/ocaml-batteries-team/batteries-included/issues/688>
+and got the first answer already six minutes later.
+In the meanwhile, I implemented my own lazy `take` function.
+
+Furthermore, to test UCT I implemented the travelling salesman problem
+in Haskell and OCaml, where I could reuse my code from the
+"Biologisch inspirierte Optimierungstechniken" course at
+<https://github.com/01mf02/bio>.
+The results are quite encouraging: With a very simple reward function that
+always rewards the nearest city, I get down to a path of length 39,087,
+whereas my best solution from the course with an Ant Colony Optimisation (ACO)
+algorithm got only a path of length close to 46000.
+
+The runtime of the Haskell and OCaml versions are quite similar, namely
+15 seconds for the Haskell and 13 seconds for the OCaml version.
+I compiled the Haskell version with
+
+    ghc -O2 -Wall Salesman
+
+and the OCaml version with
+
+    ocamlbuild -ocamlopt "ocamlopt -unsafe -inline 100" -package batteries uct.native
+
+
+
+30.8.2016
+=========
+
+
+UCT
+---
+
+I spent all day trying to understand UCT. The article by Kocsis and Szepesvári
+was very useful, even if it is somewhat unclear at some places.
+Some links that helped me to understand UCT:
+
+<https://github.com/icasperzen/hs-carbon-examples>
+<https://github.com/patperry/hs-monte-carlo>
+<http://www.princeton.edu/~rvdb/JAVA/sail/sail.html>
+<https://github.com/PetterS/monte-carlo-tree-search/tree/master/games>
+<https://jeffbradberry.com/posts/2015/09/intro-to-monte-carlo-tree-search/>
+<https://spin.atomicobject.com/2015/12/12/monte-carlo-tree-search-algorithm-game-ai/>
+<http://senseis.xmp.net/?UCT>
+
+
+29.8.2016
+=========
+
+
+Reading
+-------
+
+I've read <http://neuralnetworksanddeeplearning.com/chap4.html>.
+This article gives the intuition for a proof of universality of
+neural networks, i.e. that neural networks can with arbitrarily high precision
+compute any (continuous) function.
+The main idea is that neural networks can be thought of as
+additions of step functions at arbitrary positions and with arbitrary height,
+and thus one could trivially approximate a function by sampling it and
+determining the step function parameters appropriately.
+This argument does not explain to me yet how this is going to work
+for a function with an infinite domain and a finite neural network,
+but for finite domains, it gives a good intuition.
+
+Looking for articles about Monte Carlo tree search, I found
+"Bandit based Monte-Carlo Planning" by Kocsis and Szepesvári (2006)
+<https://web.engr.oregonstate.edu/~afern/classes/cs533/notes/uct.pdf>.
+In this article, I learned about Markov decision processes, but some
+terms, such as discounting, were not explained. I turned e.g. to
+<https://www.cs.rice.edu/~vardi/dag01/givan1.pdf> for explanation.
+The multi-armed bandit problem was introduced:
+<https://en.wikipedia.org/wiki/Multi-armed_bandit>.
+
+An interesting article comparing different Monte-Carlo Tree Search
+algorithms is "A Survey of Monte Carlo Tree Search Methods" at
+<http://repository.essex.ac.uk/4117/1/MCTS-Survey.pdf>.
+
+
+Limiting RAM usage to 1GB
+-------------------------
+
+To avoid killing Bob's processes, limit all processes on server to 1GB RAM:
+
+    ulimit -v 1000000
+
+
+Constructing problems from statements and dependencies
+------------------------------------------------------
+
+Given a file 'deps.a' which has on each line the name of a conjecture, a ':'
+and possibly a space-separated number of dependencies;
+furthermore a file 'statements' which has on each line a TPTP axiom with
+a conjecture name, construct a set of files which corresponds to the
+problems consisting of the conjecture and the dependencies used to prove it:
+
+    perl -e 'open(F,"statements"); while(<F>) {m/^fof.([^,]*),/ or die; $h{$1}=$_} while(<>) {m/(.*):(.+)/; ($c,$r)=($1,$2); @r=split(" ",$r); $d=$h{$c}; $d=~ s/, axiom,/, conjecture,/; open(G,">problems/$c"); foreach $k (@r) {print G $h{$k}}; print G $d; close G}' deps.a
+
+Courtesy of Josef Urban, master of Perl one-liner technology.
+Takes about three seconds to construct 32000 problems.
+
+
 25.8.2016
 =========
 
