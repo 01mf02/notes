@@ -1,3 +1,60 @@
+6.9.2016
+========
+
+
+monteCoP is born!
+-----------------
+
+I put together stateCoP and UCT and obtained monteCoP.
+As heuristic, I give lemma steps reward 1, path steps a reward of
+1 divided by (1 + the number of new variables in the substitution),
+and extension steps get reward 1 divided by
+(1 + the number of variables in the extension clause + the number of
+new literals).
+I cut the proof search after 100 proofs steps on each branch.
+This approach proved three new problems compared to
+contiCoP and lazyCoP. However, quite some problems fail with
+
+    Fatal error: exception Stack overflow
+
+Recompiling with `-tag debug` and running it with OCAMLRUNPARAM=b
+(after removing the try/catch in the main function) shows that
+this is probably due to a bug where a circular substitution is built.
+E.g. PUZ015-1.p exhibits this problem.
+lazyCoP unfortunately has the same problem.
+
+I tried pruning the tree by throwing away a child if it has
+neither children nor actions left.
+This solves two problems more, e.g. PUZ001+1.p, where 3662 children
+are pruned away.
+
+
+Normed rewards
+--------------
+
+I experimented with rewards in the interval [0, 1].
+At first, I wrote a function that takes a list of state-reward pairs
+and returns them with the rewards normed.
+Norming the TSP rewards this way gave me worse results.
+The reason is that the norm function works only locally on the
+currently available options -- what should it do when there is
+only a single state-reward pair available?
+What is the norm of the reward then?
+
+For this reason, I now norm the distances beforehand, which
+gives me good results. Still, using a $c_p = \sqrt 2$ gives me
+worse results than $c_p = 0$. $c_p = 0.1$ produces no better
+solution, and $c_p = 0.2$ already produces worse solutions.
+So it seems that the TSP is not really exploration-friendly.
+
+The OCaml version seemed to consistently produce worse results
+than the Haskell version. After lots of debugging, I found out
+that the OCaml version sorted the best states by total reward
+and not average reward. The key to finding the bug was to print
+the choices of the algorithm, which were completely identical,
+thus excluding a bug in the actual algorithm.
+
+
 5.9.2016
 ========
 
