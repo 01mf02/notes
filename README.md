@@ -1,3 +1,69 @@
+7.9.2016
+========
+
+
+ParamILS
+--------
+
+I talked with Honza about parameter optimisation, to exclude me
+throwing away a heuristic before having tried different parameters.
+He uses ParamILS <http://www.cs.ubc.ca/labs/beta/Projects/ParamILS/>
+to find `eprover` configurations.
+
+It works as follows: He specifies in a file a list of parameters
+and their possible values, together with a default value.
+He also has a file where he puts the input problems.
+Furthermore, he has a file where he defines ParamILS parameters,
+such as the timeout per problem (`cutoff_time`) and the
+total runtime of the parameter search (`tunerTimeout`).
+His reward is usually the time used per problem or the number of inferences.
+ParamILS then tries the same problem multiple times,
+modifying the parameters until it goes to the next problem,
+thus finally covering all problems.
+He starts several instances of ParamILS in parallel with different
+starting parameters and then takes the best (last) parameters of
+all parallel runs.
+
+Josef warned me however to get too much into parameter optimisation,
+because it is apparently a potent drug.
+
+
+Bug
+---
+
+I fixed the bug in the unification code that caused the stack overflow
+and used the opportunity to clean up the unification code.
+
+
+Two-player-based approach
+-------------------------
+
+I discussed with Chad as well as with Josef whether to implement
+an approach that is based on two players: a good and a bad player.
+The good player selects an extension clause, and the bad player
+selects an ordering of literals, where optimally the first literal
+should already turn out to not be refutable in short time.
+Chad suggested to use for the bad player choices the minimum reward
+and for the good player choices the maximum reward.
+This would however require a deeper adaption of the UCT algorithm.
+For this, I will read the MCTS survey to see how this is usually done,
+for example in games such as chess.
+
+A more lightweight alternative would be to fix the order of literals,
+based on the current prover state.
+For example, one could also run a one-lookahead search on all literals
+to see whether there exists one that is not refutable in a single step,
+then one could immediately conclude that the extension clause will
+not succeed. This might save a lot of time in the end.
+In case there is at least one potential proof step for all literals,
+one could sort the literals by the number of potential proof steps.
+
+Another thing to try is to learn from previous proofs which literals
+of a contrapositive were the hardest to refute, i.e.
+how many steps their refutation took or
+how often they were not refutable at all, and then start with these.
+
+
 6.9.2016
 ========
 
