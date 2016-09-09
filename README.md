@@ -1,3 +1,36 @@
+9.9.2016
+========
+
+
+UCT reimplementation
+--------------------
+
+After having read the UCT survey, I understood that their (fairly detailed)
+UCT algorithm differs from my implementation in some important points.
+So I implemented their version. The biggest difference is:
+Back-propagated rewards are only calculated at the *end* of a tree branch.
+The so-called rewards I calculated so far for every action
+are now only used to bias the selection of actions.
+Furthermore, the tree is only expanded a single time per UCT iteration,
+the rest of the tree that is built will be forgotten.
+That should help save memory.
+
+The new implementation gave me a new lowest distance for the TSP.
+However, for this, it was necessary to massively bias
+the action probability towards the shortest local distance.
+All cities that were not yet visited are ranked by distance to
+the last visited village. The nearest city gets rank 1.
+Below are the best results by score function:
+
+* 1/r^2: 42286
+* 1/r^3: 38612
+* 1/r^4: 37618
+* 1/r^5: **36920**
+* 1/r^6: 37319
+* 1/r^7: 38696
+
+
+
 7.9.2016
 ========
 
