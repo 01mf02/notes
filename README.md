@@ -1,3 +1,17 @@
+11.9.2016
+=========
+
+
+Random selection of actions
+---------------------------
+
+I changed the UCT implementation such that unexplored actions
+are selected according to a certain probability, and not greedily.
+This improves the TSP score to 35990 with score function 1/r^6.
+Furthermore, I adapted the Haskell implementation to match the OCaml one.
+
+
+
 9.9.2016
 ========
 
