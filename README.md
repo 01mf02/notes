@@ -1,3 +1,130 @@
+19.9.2016
+=========
+
+
+cut
+---
+
+I found out why taking only the first proof option (cut) in lazyCoP
+kept good performance, but why it heavily deteriorates results in stateCoP.
+The problem is that in lazyCoP, a proof option is only available if
+the proof via that option has succeeded, whereas in stateCoP
+a proof option is available if just the first step of its proof
+is successful.
+So enabling cut in stateCoP seems like a non-trivial task.
+On the other hand, it seems that lazyCoP implicitly does a cut,
+because it only looks at the first proof alternative via `LazyList.peek`.
+However, it is not clear at the moment whether implementing a proper cut
+in stateCoP would be useful, because monteCoP probably would not use cut
+at all because it does not backtrack.
+
+
+RAVE
+----
+
+AMAF (All Moves As First) updates statistics not only for the
+nodes on the current path, but also for all nodes below the root
+that are identical to nodes on the current path.
+One AMAF implementation is RAVE (Rapid Action Value Estimation):
+The more often a node has been visited, the less the AMAF statistics
+are weighted.
+It is possible to integrate RAVE into monteCoP, by keeping
+statistics for each contrapositive, and changing the statistics
+when a contrapositive was used.
+The statistics could be used to bias probabilities or to
+modify rewards of visited nodes.
+
+
+Monday meeting
+--------------
+
+The fact that I have explored no machine-learning-based reward heuristics
+in UCT has irated Josef.
+For that reason, I thought more about reward heuristics.
+In each prover state, we have the following information:
+
+1. Path (literals)
+2. Used contrapositives
+3. Open subgoals (clauses)
+
+In FEMaLeCoP, the used contrapositives are recorded in conjunction with the path.
+However, FEMaLeCoP estimates the *usefulness* of a particular contrapositive
+in comparison to other contrapositives, whereas we have to estimate the
+*provability* of the current state.
+The provability crucially depends on the open subgoals, so it makes sense
+to estimate the refutability of the subgoals.
+If we consider the subgoals to be independent and refutability to be a
+probability, then the total refutability is the product of the
+literal refutabilites.
+We can record data about the refutability of a literal by recording
+proof attempts. A literal was refuted iff the cut clause was reached.
+This information could be printed in clear text during the proof search,
+e.g. the contrapositive hash together with the literal number.
+(I should be careful to make sure that the CNFication produces equivalent
+clauses.)
+It rests a problem how to achieve refutabilities that are roughly between
+0 and 1. Assuming refutability of a literal is the ratio of
+successful refutations and refutation attempts (successful or not),
+the values of this are probably quite small, thus
+the product of several refutabilities are tending towards 0,
+which is not good as this is added to the exploitation term, which will
+dominate the result.
+
+At a later step, I can try to consider also the used contrapositives
+on the branch to determine the reward, as well as use the Naive Bayes scores
+to bias the probabilities when selecting extension clauses.
+As Josef said, there is much experimentation to be done.
+
+Furthermore, Josef pointed out that it might be beneficial to compare
+the number of inferences needed to solve a problem instead of using a timeout,
+because the machine learning might slow things down initially.
+
+
+Mizar proof recording
+---------------------
+
+I made an option for lazyCoP to print which literals it was able to refute.
+However, the problem is that the file size gets out of hand pretty quickly --
+for example, I calculated that the ~43000 Mizar problems take about 1TB.
+For that reason, I use `gzip` to reduce the size of the proof data.
+This is very effective; for example, a proof that has 24M before takes only
+about 500K afterwards. `bzip2` is even more effective, but unfortunately
+also much slower.
+
+
+
+15.9.2016
+=========
+
+
+Experiments
+-----------
+
+Setting weight of extension clauses to 1 gives 29 solved problems.
+Using cut3 (via `List.take 1 e`) gives only 3 solved problems!
+This looks very strange ...
+Also stateCoP exhibits the same behaviour -- not even PUZ001-1
+can be solved when one takes only the first extension possibility.
+lazyCoP solves the problem, however.
+I adapted the database code to match lazyCoP and stateCoP,
+but still stateCoP does not even prove PUZ001-1 with cut3.
+
+
+
+14.9.2016
+=========
+
+
+Experiments
+-----------
+
+Setting weight of path steps to 5 while keeping
+weight of extension steps at 1 / size of clause gives only
+26 solved puzzle problems,
+while giving weight 1 to path steps solved 29 puzzle problems.
+Both UCT v1 and v2 solve 29 puzzle problems.
+
+
 11.9.2016
 =========
 
