@@ -1,3 +1,121 @@
+29.9.2016
+=========
+
+
+Mizar@Turing100
+---------------
+
+The Mizar@Turing100 challenge is a set of problems taken from MPTP2078
+that was used in CASC-J6 to test machine learning capabilities.
+Provers would need to learn from training data and would then be
+run on (previously unknown) testing data.
+The training data contains often quite large problems where
+some given premises might not be necessary for the proof.
+For that reason, I extracted the original MPTP2078 names from the CASC files.
+Training data is at: <http://www.cs.miami.edu/~tptp/CASC/J6/MZR4Training.tgz>.
+Testing data is at: <http://www.cs.miami.edu/~tptp/CASC/J6/Problems.tgz>,
+in the MZR and MZS directories.
+There are 1000 training and 400 testing problems.
+To get the MPTP2078 filenames from the CASC files, run:
+
+    grep conjecture * | sed 's/.*fof(\([^_]*\)_\([^,]*\).*/\2__\1_\2/'
+
+
+
+28.9.2016
+=========
+
+
+nanoCoP
+-------
+
+
+On Monday, Jens Otten came and held a talk at PiWo about nanoCoP.
+He stayed until Wednesday and explained a lot about it to me.
+I made a preliminary version of nanoCoP in Haskell that
+documents some non-trivial points in the implementation.
+
+
+21.9.2016
+=========
+
+
+Skolemisation
+-------------
+
+Again, Skolemisation is rearing its ugly head.
+When leanCoP (or any of its OCaml versions) treats existential quantifiers,
+it skolemises them.
+However, if this Skolemisation is not done uniformly among different problems,
+the "same" formulae are not syntactically equivalent any more.
+For this reason, the current Skolemisation in leanCoP introduces
+Skolem constants that carry in their name the *definiens*.
+As this definiens tends to become very large and blows up the formula size,
+it is one of the main obstacles for the comparison of terms.
+Therefore, I learnt today from Josef that FEMaLeCoP was evaluated on
+a version of the MML that has been uniformly skolemised with short Skolem names.
+
+However, rereading the FEMaLeCoP paper at
+<http://cl-informatik.uibk.ac.at/users/cek/docs/15/ckju-lpar15.pdf>,
+there it is written that the consistent clausification is done inside FEMaLeCoP
+and not as a preprocessing step outside of it.
+FEMaLeCoP then deals with the resulting long names by hashing them.
+The same could be done for monteCoP, just with the extension that also
+literals of the clause would need to be hashed.
+
+
+MD5 in OCaml
+------------
+
+I tested Cezary's MD5 function:
+
+~~~ ocaml
+let md5s s = Int64.to_int ((Obj.magic (Digest.to_hex (Digest.string s))) : int64)
+~~~
+
+It seems to be able to produce values in a wider range than, say, Hashtbl.hash.
+For example, `md5s "asdf" = 3775486759822111330`, whereas
+`Hashtbl.hash "asdf" = 455139366`.
+
+
+
+20.9.2016
+=========
+
+
+Compiling literal statistics
+----------------------------
+
+I ran lazyCoP with statistics creation on all MPTP problems for 1s,
+to prevent statistics to grow too quickly.
+The resulting gzipped (!) statistics take 13G. Even grepping through
+all these statistics to see how many problems were solved takes
+very long. (I killed the counting after about 30mins.)
+For that reason, I wrote a program that transforms the gzipped statistics
+to a more condensed format, that counts literal/clause usages
+and eliminates duplicates.
+It seems that the condensed statistics will take around 10G.
+I stopped the accumulation of the data, because it took just too long.
+To decrease the data size, it will probably be better to learn data
+only from the successful proofs.
+For this, I should log the literal/clause usage into separate files
+from the other prover output. Then, I can filter out the data
+from the solved problems faster.
+
+
+Accessing an SSH server without password
+----------------------------------------
+
+Thibault showed me how to access an SSH server without always typing in
+your password. On the machine that you want to access from, run:
+
+    ssh-copy-id username@server
+
+This copies the current machine's SSH keys to the server and lets you
+access the server in the future without typing your key. Magic!
+
+
+
 19.9.2016
 =========
 
