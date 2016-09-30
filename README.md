@@ -1,3 +1,32 @@
+30.9.2016
+=========
+
+
+ParamILS
+--------
+
+ParamILS first finds parameters for a certain training set,
+then evaluates them on a testing set.
+I created a testing set with 100 problems by randomly picking them
+from the 400 Mizar@Turing100 testing problems:
+
+    ls | sort -R | tail -300 | while read file; do mv $file ../testing; done
+
+I created ParamILS wrappers for monteCoP, which turned out to be
+much less effort than expected with a single Bash script.
+I am just not sure about the role of the `tunerTimeout` variable:
+I suspect that this limits the time that ParamILS spends on treating
+the training data before passing on to the testing data.
+I set this value to 80000s (that is roughly 24h).
+To run ParamILS in parallel, I use Honza's trick that I run it
+with different values of `numRun`, namely from 1 to number of cores.
+To use monteCoP with ParamILS, I also added an option to monteCoP
+that sets the random seed.
+As "best solution" value for a monteCoP run, I return the size of the proof,
+measured by the number of lines of the monteCoP output.
+
+
+
 29.9.2016
 =========
 
