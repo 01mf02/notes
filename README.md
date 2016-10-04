@@ -1,3 +1,127 @@
+4.10.2016
+=========
+
+
+Converting ParamILS output
+--------------------------
+
+The output of the ParamILS trajectory files can be awkward to interpret.
+For example, one output line is:
+
+    80000.09000001299, 23781.86200767439, 2000, 202, 2.0, cert='1.5', certdamp='10.0', clascore='0'
+
+I am interested in the key-value pairs.
+To get them out:
+
+    cut -d " " -f 6- | ./splitparams.sh
+
+The `splitparams.sh`:
+
+~~~ bash
+#!/bin/bash
+IFS=',' read -ra ADDR
+for i in "${ADDR[@]}"; do
+  echo -n $i | sed "s/\(.*\)='\(.*\)'/-\1 \2 /"
+done
+echo
+~~~
+
+This gives for the above example line the following output:
+
+    -cert 1.5 -certdamp 10.0 -clascore 0
+
+
+Results
+-------
+
+I evaluated the MZR@Turing-100 testing data with the best found parameters
+for monteCoP and lazyCoP, both running 300s per problem.
+The results are quite disappointing: monteCoP yields only 29 solved problems,
+while lazyCoP gives 123. Furthermore, all 29 problems are contained in the 123.
+
+It is interesting to note that lazyCoP is able to solve 80 problems in under 1s
+and still 43 more in over 1s.
+In the case of monteCoP, 28 of 29 problems are solved in under 1s, with the
+29th problem being solved in 1.53s.
+(The same problem "mcart_1__t31_mcart_1.p.time", btw, is solved by lazyCoP
+in 0.01s.)
+
+What is the outcome of this result?
+I started to read "Single-Player Monte-Carlo Tree Search" by Schadd et al
+<https://dke.maastrichtuniversity.nl/m.winands/documents/CGSameGame.pdf>
+and might draw conclusions from it for improving monteCoP.
+Furthermore, I might bias the selection of clauses similarly to FEMaLeCoP.
+Furthermore, I should try to look whether I put some bug into monteCoP.
+I should also collect some statistics as to at which depths I run out of
+proof options and how often that happens.
+It might also be helpful to actually have pictures of the search tree.
+
+
+
+3.10.2016
+=========
+
+
+Second ParamILS setup
+---------------------
+
+I discussed my ParamILS setup with Honza and Josef.
+They suggested me the following setup:
+
+* Run lazyCoP with a high timeout (e.g. 300s) on all 1000 Mizar training problems.
+* Divide the *solved* problems into sets S1 and S2, where |S1| is about 5 times |S2|.
+* Run ParamILS with training set S1 and test set S2.
+* Evaluate with the best ParamILS parameters the 400 Mizar testing problems.
+
+For ParamILS, I should choose a shorter timeout per problem, e.g. 1s or 2s.
+Furthermore, I should optimise for *runlength* and not for *runtime*.
+
+Honza also told me how to read the ParamILS trajectory files:
+The first column is the time at which a problem was evaluated,
+and the second column is the quality of the current solution,
+where a low value signifies good quality (as it corresponds to
+small average number of inferences required).
+The third column is the number of problems evaluated.
+The average quality normally increases at first, but then decreases
+as more and more problems are tried.
+Honza usually gets the *last* line of the trajectory to obtain the
+best solution, but the best solutions are also in the result files.
+
+Running lazyCoP for 300s instead of 5s now solves 314 instead of 236 problems.
+The training data almost doubles from 288K to 560K.
+
+To move the problems solved from lazyCoP to a new directory:
+
+    for i in `ls out/lazycop-300s/*.trace`; do cp "training/`basename $i .trace`" newtrain/; done
+
+I then chose 50 random problems from the 314 solved to serve as
+testing problems for ParamILS.
+I then regenerated the training and testing files for ParamILS via:
+
+    find montecop/training/ -type f > montecop/training.txt
+    find montecop/testing/ -type f > montecop/testing.txt
+
+
+Discussion with Cezary
+----------------------
+
+I discussed with Cezary via Tox <https://tox.chat/>, and even though he
+previously reported problems with his USB microphone, it worked perfectly!
+I see no reason to use Skype anymore.
+
+We discussed the following points:
+
+* I should consider registering for one more course at UIBK.
+* I should check application deadline for extending my scholarship.
+* I should not publish work-related code on GitHub because of
+  university guidelines, instead use our group Git.
+* For CPP, I should consider that the CL group already sends about five papers.
+* It could be that Fabian Kunze is already working on a nanoCoP port.
+  In that case, it might pay off to visit Jasmin Blanchette's group in Nancy
+  for a week.
+
+
+
 30.9.2016
 =========
 
