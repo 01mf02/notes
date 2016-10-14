@@ -1,3 +1,183 @@
+14.10.2016
+==========
+
+
+Lemma optimisation
+------------------
+
+Researching the cause for the divergence of lazyCoP and contiCoP on PUZ030-2.p,
+I found out that contiCoP has a rather good optimisation wrt leanCoP
+that it will only add a lemma if the proof was done by an extension step.
+Otherwise, adding a lemma is superfluous, because the new lemma literal
+would already be present among the existing lemmas or the path.
+Adding lemmas only for extension steps makes the verbose prover output
+the same for lazyCoP and contiCoP. :)
+This optimisation should also be implemented for monteCoP.
+
+
+Regularity
+----------
+
+PUZ055-1.p has exposed yet another difference between lazyCoP and contiCoP.
+In lazyCoP, I checked for regularity only a single time for each entire clause.
+However, I did not consider that after proving a literal of the clause,
+the regularity check applied to the rest of the clause can fail,
+even if it did not fail before. That is because the substitution can change,
+and thus the regularity check as well.
+Therefore, I now perform the regularity check again on
+the whole remaining clause when a literal was proved.
+
+This last change makes all prover traces between lazyCoP and contiCoP 100% equal
+on the TPTP puzzle problems. :)
+
+
+
+13.10.2016
+==========
+
+
+Average ratio of inferences between provers
+-------------------------------------------
+
+    (for i in `comm -12 mc4 lc`; do echo $i `grep Inf montecop4/$i` `grep Inf lazycop-singlestrat/$i` | awk '{print $4 " " $11}'; done) > ratio
+    awk '{ total += $1/$2; count++ } END { print total/count }' ratio
+
+
+Finding the verbose prover files that diverge the earliest
+----------------------------------------------------------
+
+`cmp` is a nice little command that
+prints the first difference between two files.
+I use it to find out where the proof search diverges
+between contiCoP and lazyCoP for many problems,
+because I want to find a small example that I can analyse.
+
+    (for i in `cd conticop && grep -l Theorem *.p`; do cmp conticop/$i lazycop/$i; done) | awk '{print $7 " " $1}' | sort -n
+
+On the TPTP puzzle problems, PUZ030-2.p is the problem with the
+earliest divergence (on line 83).
+
+I start to like `awk`.
+Now it is probably only a matter of days until I start
+fantasising about Perl. :)
+
+
+
+11.10.2016
+==========
+
+
+lazyCoP
+-------
+
+### On MZR@Turing testing set (400 problems)
+
+* lazyCoP with cut4: 123 problems
+* lazyCoP without cut4: 91 problems
+* FEMaLeCoP: 117 problems
+
+
+monteCoP
+--------
+
+### On MZR@Turing testing set (400 problems)
+
+* monteCoP with cut: 74 problems
+* monteCoP without cut: 79 problems
+
+Furthermore, the version with cut solves only one problem
+that the version without cut does not.
+
+
+10s
+---
+
+Evaluations with 300s took too long to test,
+so I made some evaluations with 10s.
+
+* femalecop: 101
+* lazycop: 84
+* lazycop-nocut4: 83
+* montecop3: 61
+* montecop4: 68
+* montecop4 with exploration oscillation amplitude 0.2 and period 50 iterations: 63
+
+
+lazyCoP pt. 2
+-------------
+
+I found out why lazyCoP performed so badly in the previous evaluation:
+It is due to two reasons:
+First, FEMaLeCoP uses a strategy schedule that is superior in this test set.
+Second, there are still some differences in the proof search.
+They can be seen by running contiCoP with the verbose flag,
+for example on PUZ004-1.p.
+
+
+
+10.10.2016
+==========
+
+
+ParamILS test evaluation parameters
+-----------------------------------
+
+When ParamILS finishes the tuning, it runs the found parameters
+once on all test problems and returns the final score.
+To get the best configurations on the test problems,
+I used:
+
+    (for i in *algoAlgo-test*; do echo `cat $i` $i; done) | sort -n
+
+
+lazyCoP cut4
+------------
+
+I think that I found out the reason why lazyCoP performed different
+inferences than FEMaLeCoP: It is due to the fact that it performed
+a cut on the different proofs for subclauses.
+I made this cut configurable, and now at least in my initial evaluation
+it proves exactly the same number of PUZ problems as FEMaLeCoP in 2s
+(51), whereas with the cut, it proves only 49.
+
+
+
+6.10.2016
+=========
+
+
+ParamILS round two
+------------------
+
+I took the last line of each trajectory and sorted them all.
+Then, I took two solutions, namely the second-best
+(because it was tried on more than double as many problems than the first-best)
+and the eighth-best (because it was the first solution after the
+second-best to have been tested on more problems).
+
+
+
+5.10.2016
+=========
+
+
+CoP fight
+---------
+
+I noticed that on the MZR@T-100 testing dataset, lazyCoP performed quite well
+compared to FEMaLeCoP.
+lazyCoP gives 123 solved problems, while FEMaLeCoP (without learning data)
+gives only 117.
+I then looked at the times that lazyCoP needed to prove its unique problems:
+
+    (for i in `comm -23 solved/lazycop-testing solved/femalecop-testing`; do head -1 out/lazycop-testing/$i.time | cut -f 1 -d "u"; done) | sort -n
+
+Four unique problems are proven between 0s and 1s,
+five problems between 1s and 100s, and three problems above 100s.
+So perhaps I did by chance cut at a good position? :)
+
+
+
 4.10.2016
 =========
 
