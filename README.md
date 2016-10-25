@@ -1,3 +1,42 @@
+17.10.2016
+==========
+
+
+More lazy CoP
+-------------
+
+I now only calculate database entries (potentially fitting matrix entries)
+in case all lemma and reduction steps were tried.
+This improves performance marginally.
+I gained a more influential improvement by only calculating the
+literal hash in case of tracing.
+This makes lazyCoP prove 438 bushy problems, compared with 441 by contiCoP.
+To compare the times:
+
+    (cd lazycop && grep -l Theorem *) | sort > lc
+    (cd conticop && grep -l Theorem *) | sort > cc
+    (for i in `comm -12 cc lc`; do echo $i `grep user conticop/$i.time` `grep user lazycop/$i.time` | awk '{print $2 " " $8}'; done) | sort -n
+
+
+Cutting FEMaLeCoP
+-----------------
+
+Disclaimer: When I write "FEMaLeCoP", I mean FEMaLeCoP without any learnt data.
+
+Enabling cut4 in the newly optimised lazyCoP yields
+523 solved bushy MPTP problems, whereas FEMaLeCoP yields only
+521 and contiCoP yields only 441.
+The difference between FEMaLeCoP and contiCoP is mostly their
+strategy schedule.
+lazyCoP+cut4 uses the same strategy schedule as contiCoP,
+only that every strategy is run with cut4.
+Thus I have finally beaten FEMaLeCoP! :)
+Another interesting fact is that lazyCoP+cut4 proves 47 unique problems,
+whereas FEMaLeCoP proves 45 unique problems,
+so they are quite complementary.
+
+
+
 14.10.2016
 ==========
 
@@ -29,6 +68,18 @@ the whole remaining clause when a literal was proved.
 
 This last change makes all prover traces between lazyCoP and contiCoP 100% equal
 on the TPTP puzzle problems. :)
+
+
+Number of proven problems for multiple provers
+----------------------------------------------
+
+    for i in *; do echo $i `grep Theorem -l $i/* | wc -l`; done
+
+
+Compare number of inferences for two provers
+--------------------------------------------
+
+    (for i in `cd conticop && ls *.p`; do echo $i `grep Inf conticop/$i` `grep Inf lazycop/$i`; done) | awk '{print $1 " " $4 " " $13}'
 
 
 
@@ -910,13 +961,13 @@ I spent all day trying to understand UCT. The article by Kocsis and Szepesvári
 was very useful, even if it is somewhat unclear at some places.
 Some links that helped me to understand UCT:
 
-<https://github.com/icasperzen/hs-carbon-examples>
-<https://github.com/patperry/hs-monte-carlo>
-<http://www.princeton.edu/~rvdb/JAVA/sail/sail.html>
-<https://github.com/PetterS/monte-carlo-tree-search/tree/master/games>
-<https://jeffbradberry.com/posts/2015/09/intro-to-monte-carlo-tree-search/>
-<https://spin.atomicobject.com/2015/12/12/monte-carlo-tree-search-algorithm-game-ai/>
-<http://senseis.xmp.net/?UCT>
+* <https://github.com/icasperzen/hs-carbon-examples>
+* <https://github.com/patperry/hs-monte-carlo>
+* <http://www.princeton.edu/~rvdb/JAVA/sail/sail.html>
+* <https://github.com/PetterS/monte-carlo-tree-search/tree/master/games>
+* <https://jeffbradberry.com/posts/2015/09/intro-to-monte-carlo-tree-search/>
+* <https://spin.atomicobject.com/2015/12/12/monte-carlo-tree-search-algorithm-game-ai/>
+* <http://senseis.xmp.net/?UCT>
 
 
 29.8.2016
