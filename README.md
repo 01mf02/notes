@@ -1,3 +1,44 @@
+26.10.2016
+==========
+
+
+oracleCoP
+---------
+
+I have implemented a version of lazyCoP that performs Monte Carlo simulations
+before choosing between potential extension clauses.
+When the MCTS finds a proof for the current literal, it returns it.
+However, it is possible to still resume MCTS after that,
+because the MCTS returns its evolving tree as a lazy list of trees,
+together with potential proofs.
+This makes it possible to emulate monteCoP, by just setting the
+number of MCTS iterations to infinity.
+That way, at the first point where an extension clause has to be chosen,
+MCTS takes over until it finds a proof.
+
+The first results look quite promising:
+On the 2078 bushy MPTP problems, lazyCoP proves 624 and oracleCoP proves 475
+in 100s. Of the 475, 26 problems are unique.
+
+I measured the ratio of inferences between lazyCoP and oracleCoP.
+For this, I defined the number of inferences for oracleCoP to be
+the number of extension steps à la lazyCoP plus the number of UCT iterations.
+(Furthermore, in case that UCT finds a proof, we add the number of
+extension steps in the proof to the number of inferences.
+This is to prevent that the number of extension inferences can become 0.)
+If we do not add the number of UCT iterations,
+then only 9 lazyCoP proof searches yield smaller number of inferences
+(vs. 441 bigger), whereas adding UCT iterations gives a more realistic
+ratio of 188 smaller (vs. 250 bigger and 12 equal).
+The average ratio of inferences is 13.1609, meaning that on average
+lazyCoP took 13 times as many inferences as oracleCoP.
+This average was obtained by:
+
+    for i in `comm -12 solved/bushy/100s/lazycop solved/bushy/100s/oraclecop`; do echo $i `grep Inf out/bushy/100s/oraclecop/$i` `grep Inf out/bushy/100s/lazycop/$i`; done > merged
+    cat merged | awk '{sum+=$15/($4+$6); count++} END {print sum/count}'
+
+
+
 17.10.2016
 ==========
 
