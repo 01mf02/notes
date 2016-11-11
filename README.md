@@ -1,3 +1,26 @@
+11.11.2016
+==========
+
+
+Git permissions
+---------------
+
+When creating a Git repository on a server, we had the problem
+that permissions were not set correctly by Git.
+This problem is solved by setting up a new repository as follows:
+
+    mkdir new-repo
+    chown user:group new-repo
+    cd new-repo
+    git init --bare --shared
+
+To migrate an already existing repository with the wrong permission settings,
+make a new repository (with right permission settings),
+replace the old repository by the new repository and
+`git push` from a local copy of the repository.
+
+
+
 26.10.2016
 ==========
 
