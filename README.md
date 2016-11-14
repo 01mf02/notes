@@ -19,6 +19,12 @@ make a new repository (with right permission settings),
 replace the old repository by the new repository and
 `git push` from a local copy of the repository.
 
+Another really nice command is
+
+    git gc
+
+which compresses the repository and deletes files in the objects directory.
+
 
 
 26.10.2016
