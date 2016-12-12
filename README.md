@@ -45,6 +45,31 @@ This also makes the trick with the counter unnecessary.
 I would be interested to prove soundness of that method.
 
 
+Theorem ordering
+----------------
+
+I reproved all the MPTP2078 problems with lazyCoP.
+Compared to a previous run on Oct 3 with 314 solved problems,
+the new version from today proves only 307 problems.
+I looked at the problems and saw that e.g. `funct_2__t65_funct_2.p`
+was previously proven in about 0.12s, but could not be proven by the
+new version even after 300s!
+Using `git bisect` (an awesome tool, by the way!), I was able to show
+that reordering the equality axioms had a large impact on the time
+needed to prove the problem.
+Furthermore, because cut was active during the first strategy,
+the proof was not found at all during the first strategy,
+but because the maximum depth was set to 10,
+it actually never got beyond the first strategy.
+A remedy would be to limit the time spent per depth for all strategies
+but the last, but I think that for now, I'm happy to know the cause.
+The other problems, such as `setfam_1__t62_setfam_1.p`,
+are similar in the way that they contain equality and that
+they starve at the level where the old lazyCoP found the proof,
+but because the new version searches the space in a different order,
+it times out.
+
+
 
 11.11.2016
 ==========
