@@ -1,3 +1,86 @@
+12.12.2016
+==========
+
+
+nanoCoP results
+---------------
+
+I translated nanoCoP to OCaml and evaluated it on the MPTP2078 dataset
+with a timeout of 1s, using just a single mode with cut.
+The results are surprisingly good: The original Prolog version proves
+270 problems, while my OCaml port proves 373!
+
+Still, my clausal OCaml version (lazyCoP) proves 446 problems,
+so that indicates that the non-clausal overhead for these problems
+does not pay off, probably because the problems do not have a
+very deep structure (many nested and/or binders).
+
+
+Contextual Skolemisation
+------------------------
+
+For machine learning, it is important to have a consistent naming scheme
+for Skolem variables, such that the "same" Skolem variables that
+appear in multiple problems obtain the same name whenever possible.
+The previous approach by Cezary would just identify a Skolem variable
+induced by $\exists x. p(x)$ by `?[X]: p(X)`, and annotate all
+Skolem variables of a premise with a running counter.
+The counter is necessary because sometimes syntactically equal terms
+can give rise to different Skolem variables.
+This is e.g. exposed in the following TPTP problem:
+
+~~~
+fof(p1, axiom, (![X]: (~p(X) | (?[Y]: q(X,Y))))).
+fof(p2, axiom, (![X]: ( p(X) | (?[Y]: q(X,Y))))).
+~~~
+
+Here, Cezary's Skolemisation maps both occurrences of `?[Y]: q(X,Y)`
+to the same Skolem variable. While I haven't yet been able to show
+that this makes the proving unsound, I'm also not convinced that soundness
+is maintained.
+I have defined a new Skolemisation naming method, which one could call
+"Contextual Skolemisation". There, all the "parallel" disjuncts (the context)
+are saved in the name of the Skolem variable.
+This also makes the trick with the counter unnecessary.
+I would be interested to prove soundness of that method.
+
+
+
+27.10.2016
+==========
+
+
+cut4
+----
+
+I was already suspecting since some time that cut4
+-- taking only the first proof for a set of literals --
+is equivalent to cut1 + cut2 + cut3.
+However, when comparing running with cut4 and without cut4,
+the version with cut4 performed a bit better.
+To solve this mystery, I compared the proof search traces
+between single-strategy runs with cut1 + cut2 + cut3
+with and without cut4.
+The result was that the proof search traces were exactly the same.
+This strongly indicates that cut4 is equivalent to cut1 + cut2 + cut3.
+The reason why it performed better was probably because of strategy scheduling.
+
+
+Finding problems not solved by any prover
+-----------------------------------------
+
+    (cd oraclecop/ && grep -l -L Theorem * | grep -v ".time") | sort > ocunsolved
+    (cd lazycop/   && grep -l -L Theorem * | grep -v ".time") | sort > lcunsolved
+
+We can use this to calculate the ratio of inferences for unsolved problems:
+
+    for i in `comm -12 lcunsolved ocunsolved`; do echo $i `grep Inf oraclecop/$i` `grep Inf lazycop/$i`; done > merged
+    cat merged | awk '{sum+=$15/($4+$6); count++} END {print sum/count}'
+
+The result is 1062.16.
+
+
+
 26.10.2016
 ==========
 
