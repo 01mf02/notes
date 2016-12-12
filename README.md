@@ -46,6 +46,35 @@ I would be interested to prove soundness of that method.
 
 
 
+11.11.2016
+==========
+
+
+Git permissions
+---------------
+
+When creating a Git repository on a server, we had the problem
+that permissions were not set correctly by Git.
+This problem is solved by setting up a new repository as follows:
+
+    mkdir new-repo
+    chown user:group new-repo
+    cd new-repo
+    git init --bare --shared
+
+To migrate an already existing repository with the wrong permission settings,
+make a new repository (with right permission settings),
+replace the old repository by the new repository and
+`git push` from a local copy of the repository.
+
+Another really nice command is
+
+    git gc
+
+which compresses the repository and deletes files in the objects directory.
+
+
+
 27.10.2016
 ==========
 
