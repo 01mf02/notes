@@ -1,3 +1,19 @@
+13.12.2016
+==========
+
+Incomplete clause statistics?
+-----------------------------
+
+monteCoP uses statistics about literals saying how often the literal was
+successfully or unsuccessfully tried for refutation.
+I saw that for some clauses, statistics about some literals did exist,
+but not about the other literals. That, however, is natural,
+because if even refuting the first literal fails,
+the other literals are not even tried.
+So that is not a sign of incomplete statistics.
+
+
+
 12.12.2016
 ==========
 
