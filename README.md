@@ -30,6 +30,42 @@ the size of the problem), whereas nanoCoP requires only depth 1.
 
 
 
+16.12.2016
+==========
+
+
+Saving substitution at every proof step
+---------------------------------------
+
+In the original FEMaLeCoP, the substitution was saved for every proof step,
+which I have later replaced by saving only a single substitution
+for the whole proof.
+I have noted just now that this makes a difference when showing the proof,
+namely that saving a single substitution will show a variable to be
+bound already before it has actually been bound later,
+whereas the previous approach would show a variable to be bound
+only from the point where it was actually bound.
+In the machine learning data, this results in more features
+for the new approach. It is yet unclear whether this helps or hurts.
+
+
+
+13.12.2016
+==========
+
+Incomplete clause statistics?
+-----------------------------
+
+monteCoP uses statistics about literals saying how often the literal was
+successfully or unsuccessfully tried for refutation.
+I saw that for some clauses, statistics about some literals did exist,
+but not about the other literals. That, however, is natural,
+because if even refuting the first literal fails,
+the other literals are not even tried.
+So that is not a sign of incomplete statistics.
+
+
+
 12.12.2016
 ==========
 
