@@ -40,6 +40,38 @@ The evaluation code is:
 
 
 
+23.12.2016
+==========
+
+
+Exponential Skolemisation
+-------------------------
+
+When running lazyCoP on problem tmap_1__t144_tmap_1.p,
+it crashed my computer, taking up all memory.
+After setting `ulimit -v 1000000`, I could diagnose that
+the problem was due to the Skolemisation being exponential.
+I observed that this was due to me changing the Skolemisation,
+but also the previous Skolemisation method had problems,
+namely that it introduced unnecessary Skolem function arguments;
+for example for $\exists a b. p(a, b)$, it would create
+$p(a, b(a))$ instead of $p(a, b)$.
+I fixed this with a new Skolemisation method that is still
+suitable for machine learning, but tries to give Skolem functions
+the smallest name possible.
+With this new Skolemisation, the number of solved Mizar training problems
+goes up from 308 to 314, which is the same as before I started
+messing with nanoCoP. :)
+
+Furthermore, I tried to define a class of problems parametrised
+by a natural number that previously exposed exponential behaviour.
+I wrote a problem generator in Haskell (`skolemex.hs`)
+and found out that the generated problems are relatively hard
+for lazyCoP (the depth required to solve the problem is proportional to
+the size of the problem), whereas nanoCoP requires only depth 1.
+
+
+
 16.12.2016
 ==========
 
