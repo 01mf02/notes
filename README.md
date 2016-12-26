@@ -1,3 +1,45 @@
+26.12.2016
+==========
+
+
+Normalised Bayesian relevance
+-----------------------------
+
+The FEMaLeCoP Bayesian relevance has some tricks up its sleeves
+to improve predictions. Unfortunately, at the same time,
+it is not as probability measure, because its results are not normed
+between 0 and 1, and norming them is not straightforward.
+For that reason, I created a new, "strict" Bayesian relevance method
+that is actually a probability measure.
+It currently only considers features shared between learnt data
+and the current context; however, this restriction might fall in the future.
+I have also not integrated IDF yet, as the terms that IDF is calculated from
+are already used in the basic Bayesian relevance calculation,
+so perhaps we are already doing something very close to IDF without knowing it?
+
+In my first experiments, the obtained probabilities frequently were
+much too small to be usable. I evaluated this on the TPTP file PUZ035-1.p,
+where I first ran lazyCoP on it to generate training data (only clauses),
+then ran monteCoP with a maximum of 100 UCT iterations per inference.
+My new Bayesian relevance used a mean of **7858** UCT iterations
+(mean over 9 different runs) in 5.83s before solving the problem.
+For comparison, a constant relevance of 1 requires on average only **2749** iterations
+in 0.79s and a simple linear normalisation of the original FEMaLeCoP score
+requires **1304** iterations in 1.75s.
+(Note that the lower amount of iterations for FEMaLeCoP is neutralised
+by its lower prediction speed.)
+
+The results for my new Bayesian relevance were clearly unacceptable.
+I found that dividing the logarithmic relevance by
+the number of shared features before exponentiation massively improves
+performance, namely to an average of only **418** UCT iterations in 0.45s.
+
+The evaluation code is:
+
+    make montecop.native && time for i in {1,2,3,4,5,6,7,8,9}; do ./montecop.native -maxiters 100 eval/tptp/PUZ035-1.p -learn -datai datab -clascore 3 -seed $i | grep Iters; done | awk '{total += $5} END {print total/NR}'
+
+
+
 16.12.2016
 ==========
 
