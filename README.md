@@ -1,3 +1,108 @@
+2.1.2016
+========
+
+
+Plotting integrated data with `awk`
+-----------------------------------
+
+I wrote a blog post at http://gedenkt.at/blog/plotting-integrated-data/
+about plotting how many experiments succeed until a certain time.
+I now created a nice `awk` one-liner that does the job of the
+by multiple orders larger original Haskell program:
+
+    sort -n | awk '{p++; print p " " $1}'
+
+It can be used as follows, where the `.time` files are outputs of
+`/usr/bin/time`:
+
+    grep --no-filename user out/bushy/60s/leancop-160211/*.time | sort -n | awk -F'u' '{p++; print p " " $1}'
+
+(The `-F` switch sets the delimiter that `awk` uses to split input lines.)
+
+The `gnuplot` command on the blog to plot the data stays the same:
+
+    gnuplot -e "set term png; set output 'gnuplot.png'; plot 'integrated'"
+
+
+
+30.12.2016
+==========
+
+
+`yellow_1__t23_yellow_1.p`
+--------------------------
+
+I looked at the problems that were solved by lazyCoP,
+but not by monteCoP. Among those, I particularly noted
+the problem `yellow_1__t23_yellow_1.p`, which is solved by
+lazyCoP in roughly 0.01s (168 inferences),
+but monteCoP takes between 7 and 19 seconds!
+
+First, I thought that switching back on prefiltering of
+extension options before calculating their Bayesian relevance
+could improve performance, but this turned out to have a
+non-noticeable influence.
+(As a side note, prefiltering is now configurable via the switch
+`-prefilter`.)
+However, decreasing the simulation depth has a major influence:
+Before, I used a simulation depth of 80.
+With simdepth = 20, monteCoP needs "only" around 2s.
+For one exemplary run, monteCoP uses 2564 UCT iterations
+with a total of 43777 simulation steps. That amounts to
+an average 17,07 simulation depth, which is close to the maximum simdepth.
+In other problems that I have debugged before, I remember
+that the average simulation depth seemed to be much lower than
+the maximum simdepth (typically only around 2 or 3),
+which indicates that for problems that are made such that
+there are hardly any "dead ends", i.e. you are easily stuck in an
+infinite reasoning loop, a low simdepth is crucial.
+
+
+Old-fashioned inferences
+------------------------
+
+I noticed that monteCoP missed many problems that were solved by
+lazyCoP in a very small amount of time, say 0.01s.
+For that reason, I have introduced a parameter that allows to
+interweave lazyCoP and monteCoP inferences such that at first,
+lazyCoP inferences are performed until a certain number of
+inferences (per depth), and only then Monte Carlo simulations are run.
+They idea is that the more efficient brute-force search of lazyCoP
+is exploited until the search space gets too large,
+and then monteCoP should (hopefully) play its strengths.
+
+In the first evaluation, with a number of traditional inferences of $10^5$
+and inverse clause weight, monteCoP proves 91 problems.
+This is more than FEMaLeCoP, which proves only 89 problems,
+but still much less than lazyCoP, which proves 97 problems!
+Moreover, even FEMaLeCoP only proves one problem more than lazyCoP.
+This is very strange ...
+
+
+
+29.12.2016
+==========
+
+
+Cut expansion policy
+--------------------
+
+I revisited the "cut-like" expansion policy where I will not take the
+first simulation step as new tree state, but the simulation step that
+has the fewest subgoals available. I found out that previously,
+my calculation of the number of subgoals was wrong, so I have now
+introduced two metrics:
+
+1. Number of subgoal clauses.
+2. Sum of literals over all subgoal clauses.
+
+In my experiments, I found that metric 1 proves 66 problems,
+whereas metric 2 proves 72 problems. Not using a cut-like
+expansion policy solves 73 problems.
+Metric 2 solves 5 new problems, but loses 6, so it is not very complementary.
+
+
+
 26.12.2016
 ==========
 
@@ -24,8 +129,8 @@ then ran monteCoP with a maximum of 100 UCT iterations per inference.
 My new Bayesian relevance used a mean of **7858** UCT iterations
 (mean over 9 different runs) in 5.83s before solving the problem.
 For comparison, a constant relevance of 1 requires on average only **2749** iterations
-in 0.79s and a simple linear normalisation of the original FEMaLeCoP score
-requires **1304** iterations in 1.75s.
+in 0.79s and a simple linear normalisation between 0 and 1
+of the original FEMaLeCoP score requires **1304** iterations in 1.75s.
 (Note that the lower amount of iterations for FEMaLeCoP is neutralised
 by its lower prediction speed.)
 
