@@ -28,14 +28,14 @@ I evaluated these options. The results were generated with:
     for i in out/bushy/60s/leancop-151223*; do if [ -d "$i" ]; then echo $i `(cd $i && grep -l Theorem *) | wc -l`; fi; done
 
 
-Options        Solved problems
-------------- ----------------
-(none)                     626
-nd                         662
-nd+lrn                     628
-nd,fns+lrn                 634
-nd,dt                      644
-nd,fns,dt+lrn              670
+| Options       |  Solved problems |
+| :------------ | ---------------: |
+| (none)        |              626 |
+| nd            |              662 |
+| nd+lrn        |              628 |
+| nd,fns+lrn    |              634 |
+| nd,dt         |              644 |
+| nd,fns,dt+lrn |              670 |
 
 Table: Results for FEMaLeCoP from December 2015.
   nd stands for nodef, fns for feanosubst, and dt for dtree.
