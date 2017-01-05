@@ -57,6 +57,26 @@ for the unguided OCaml-leanCoP from the FEMaLeCoP paper (574)
 comes from.
 
 
+Bogus learning
+--------------
+
+I had an intuition, namely to enable learning without providing a data file.
+This will still compute features and calculate Bayesian relevance,
+but this will not contribute in a positive way.
+
+The result (without any other options than `-learn`) was: 574 solved problems.
+This is exactly the number that was given in the FEMaLeCoP paper.
+So my hypothesis is that this was the used configuration
+for what is called in the paper the "unaided OCaml-leanCoP".
+If this hypothesis holds, then I find the text in the paper misleading:
+
+> Unaided OCaml-leanCoP is first run on all the 2078 bushy problems
+> with a time limit of 60s. This solves 574 problems.
+
+This section does not mention that the unaided OCaml-leanCoP performs
+any calculations related to machine-learning.
+
+
 
 2.1.2016
 ========
