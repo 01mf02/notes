@@ -1,3 +1,63 @@
+5.1.2016
+========
+
+
+Verifying FEMaLeCoP results
+---------------------------
+
+To find out about the source of the bad FEMaLeCoP results from 30.12.2016,
+I asked Cezary, who gave me an even older FEMaLeCoP version than the one
+I previously used, namely from December 2015,
+which is reasonable given that his FEMaLeCoP preprint on his website
+
+http://cl-informatik.uibk.ac.at/users/cek/docs/15/ckju-lpar15.pdf
+
+dates from 11 November 2015.
+His explanation for the bad performance was that he might have run
+FEMaLeCoP with different parameters, for example:
+
+* `-nodef`: Disables definitional CNF.
+* `-feanosubst`: Disables the calculation of features
+  from terms that are present in the substitution.
+* `-dtree`: Uses dtree for unification and will also
+  prefilter unification options before evaluating them with
+  the Naive Bayes classifier.
+
+I evaluated these options. The results were generated with:
+
+    for i in out/bushy/60s/leancop-151223*; do if [ -d "$i" ]; then echo $i `(cd $i && grep -l Theorem *) | wc -l`; fi; done
+
+
+Options        Solved problems
+------------- ----------------
+(none)                     626
+nd                         662
+nd+lrn                     628
+nd,fns+lrn                 634
+nd,dt                      644
+nd,fns,dt+lrn              670
+
+Table: Results for FEMaLeCoP from December 2015.
+  nd stands for nodef, fns for feanosubst, and dt for dtree.
+  lrn is the version with learning data fed from the non-learn version.
+
+Interesting points:
+
+* Switching on dtree worsens the results for the non-learning version,
+  but improves it for the learning version.
+* feanosubst has a smaller impact than I would have expected,
+  given that it should reduce the number of features quite a bit.
+* The number of nd,fns+lrn (634) is the one that is closest to the
+  FEMaLeCoP results given in the paper (635).
+* The best machine-learning results (670) add only **1.2%** to the
+  best non-machine-learning results.
+
+As of now, it is totally unclear to me where the relatively bad result
+for the unguided OCaml-leanCoP from the FEMaLeCoP paper (574)
+comes from.
+
+
+
 2.1.2016
 ========
 
