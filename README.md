@@ -1,3 +1,15 @@
+07.01.2016
+==========
+
+
+Technology Exploration: Racket
+------------------------------
+
+I spent some time getting to know the programming language Racket.
+I documented my learning under: http://gedenkt.at/blog/falling-in-love-with-racket/
+
+
+
 5.1.2016
 ========
 
