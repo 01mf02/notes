@@ -1,3 +1,16 @@
+10.01.2016
+==========
+
+
+Cezary's Writing Advice
+-----------------------
+
+* Put conclusion of a paragraph already at its beginning.
+  For example: "We therefore focus on ..."
+* Give the intuition in two sentences, then say it formally.
+
+
+
 07.01.2016
 ==========
 
