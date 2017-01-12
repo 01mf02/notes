@@ -31,6 +31,52 @@ I use to measure the `runlength` and the `cutoff_length`.
 For now, I am going to ignore the `cutoff_length` completely.
 
 
+CL meeting
+----------
+
+Excerpt from the log:
+
+### Travel reimbursement
+
+- deadline: Freistellung in VIS at least a week before travelling!
+- entry "allgemeine Anmerkung zur Freistellung" should include useful information,
+  like link to conference, link to website of project partner, reason to go there, etc.
+- collect receipts, bank-account transfer
+
+### Publications
+
+- send information to SJ with complete information (see guidelines in Wiki)
+- do it immediately
+- also AFP entries and workshop papers should be entered, though they may
+  partially only shown as project related publications
+- online first papers should only be displayed on project website,
+  move to CL publication website after regular appearance
+
+
+Moving from grid02 to colo12
+----------------------------
+
+Due to Jan running lots of experiments on grid02, I moved my experiments
+to colo12.
+An obstacle was outdated or not installed software on the server.
+I needed to manually install:
+
+* GNU make
+* timeout (GNU coreutils)
+* OPAM (for OCaml Batteries)
+
+The GNU tools were easily installed with `./configure --prefix=...`.
+OPAM was a bit harder, but also quite doable:
+I had to adapt a path "/usr/local" in `setup.ml` with my local prefix.
+
+Installing OCaml Batteries was then only a matter of running:
+
+    opam install batteries.2.4.0
+
+(I also tried installing Batteries without OPAM, but that quickly
+resulted in errors.)
+
+
 
 10.01.2016
 ==========
