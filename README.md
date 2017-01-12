@@ -1,3 +1,37 @@
+12.01.2016
+==========
+
+
+ParamILS reboot
+---------------
+
+I revisited my previous attempts to optimise monteCoP parameter with ParamILS.
+
+First, I thought about how to measure the `runlength` of a single
+monteCoP run. (As opposed to the `runtime`.)
+As the newer monteCoP combines a lazyCoP master prover with a Monte Carlo slave,
+one has to consider the number of inferences calculated for both of them.
+So I think that the sum of master + base unification steps is a good estimate.
+
+Second, I noted that the `maxiters` option does not accept the same unit
+as the `runlength` discussed above, because `maxiters` considers
+UCT *iterations*, not *inferences* performed within.
+For that reason, I thought about making a new switch similar to `maxiters`,
+but one that stops monteCoP as soon as sum of master + slave inferences
+exceeds a certain value.
+Luckily, that was not necessary, because after looking at the ParamILS output,
+I noted that the `cutoff_length` always took the value $2^32 - 1$,
+which is the maximal 32-bit integer. This is used by ParamILS because I set
+
+    cutoff_length = max
+
+in `scenario.txt`. Even if this would be set to a different value,
+it would remain constant, so I do not need to worry about the unit
+I use to measure the `runlength` and the `cutoff_length`.
+For now, I am going to ignore the `cutoff_length` completely.
+
+
+
 10.01.2016
 ==========
 
