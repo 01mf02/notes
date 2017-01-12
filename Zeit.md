@@ -1,3 +1,10 @@
+Monatsplan (1.3. - 31.3.)
+=========================
+
+* 26.--30.: AITP
+
+
+
 Monatsplan (1.1. - 31.1.)
 =========================
 
@@ -18,14 +25,21 @@ Wochenplan (9.1. - 16.1.)
 * Mi: 10--16: Zeitmanagement
 
 * Do:
-    - ParamILS-Neuevaluation (2h)
-    - CADE-Details prüfen (Vorlage, Seitenzahl etc.) (1h)
-    - Treffen Cezary? (1h)
-    - Integration Review-Kommentare (2h)
+    - ParamILS-Neuevaluation (3h)
+    - Experimente von grid02 auf colo12 verschieben (1h)
+    - AITP -> Kalender (10min)
+    - E-Mails (2h)
 
-* Fr: 
+* Fr:
+    - CADE-Details prüfen (Vorlage, Seitenzahl etc.) (1h)
+    - Integration Review-Kommentare (2h)
+    - Freistellung in VIS für AITP (20min)
+    - Satallax-ML-Artikel und PAAR in Wiki eintragen (30min)
+    - Artikel auf Webseite aktualisieren (30min)
     - Evaluationsplan monteCoP/FEMaLeCoP/randoCoP (3h)
     - UCT + Pseudocode schreiben (3h)
+    - Sylpheed-Antwortfunktion reparieren (30min)
+    - Treffen Cezary (1h)
 
 Weitere monteCoP-Themen:
 
