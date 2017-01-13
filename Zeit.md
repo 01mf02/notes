@@ -1,8 +1,13 @@
-Monatsplan (1.3. - 31.3.)
-=========================
+Zukunft
+=======
 
-* 26.--30.: AITP
-
+* 1.2.: MIP-Seminar & Generische Kompetenzen anmelden
+* 11.2.: CADE abstract
+* 18.2.: CADE paper
+* 26.3--30.3: AITP
+* 8.4.: CADE rebuttal
+* 22.4.: CADE notification
+* 27.5.: CADE final version
 
 
 Monatsplan (1.1. - 31.1.)
@@ -31,14 +36,14 @@ Wochenplan (9.1. - 16.1.)
     - E-Mails (2h)
 
 * Fr:
+    - Freistellung in VIS für AITP (20min)
+    - Sylpheed-Antwortfunktion reparieren (30min)
     - CADE-Details prüfen (Vorlage, Seitenzahl etc.) (1h)
     - Integration Review-Kommentare (2h)
-    - Freistellung in VIS für AITP (20min)
     - Satallax-ML-Artikel und PAAR in Wiki eintragen (30min)
     - Artikel auf Webseite aktualisieren (30min)
     - Evaluationsplan monteCoP/FEMaLeCoP/randoCoP (3h)
     - UCT + Pseudocode schreiben (3h)
-    - Sylpheed-Antwortfunktion reparieren (30min)
     - Treffen Cezary (1h)
 
 Weitere monteCoP-Themen:
