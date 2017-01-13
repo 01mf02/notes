@@ -1,3 +1,22 @@
+13.01.2016
+==========
+
+
+Claws Mail reply recipients
+---------------------------
+
+When I received messages from the CL mailing list and replied to them,
+Claws Mail would always insert the mailing list as recipient.
+That led to me sending mails to all CL members by accident.
+
+That behaviour can be deactivated by disabling
+Configuration -> Preferences ->
+Compose -> Writing -> Reply button invokes mailing list reply.
+I did not find that option when browsing the preferences,
+but I found it after two minutes of grepping the source code. :)
+
+
+
 12.01.2016
 ==========
 
