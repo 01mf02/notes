@@ -1,3 +1,52 @@
+16.01.2016
+==========
+
+
+ParamILS results
+----------------
+
+I looked at the results of the evaluation from 12.01.2016.
+Some observations:
+
+* The most successful extension probability heuristic was
+  the naive inverse one in 31 cases and FEMaLe in a single (!) case.
+* The maximum number of MC iterations was always the
+  smallest available value, namely 25 (others were 50 and 100).
+* The simulation depth also all converged to values between 10 and 20
+  (others were 40 and 80).
+* The machine learning evaluation heuristic seems to be only partially
+  successful: 14 times its influence was 0, 8 times it was 0.5, and
+  7 times it was 1. Even the second-best overall solution has an
+  ML influence of 0 -- interestingly coupled with a naive reward
+  that is also 0. That means that the second-best solution has
+  an evaluation heuristic that gives a uniform score of 0!
+* The best expansion policy is 20 times cutlit and 12 times fst.
+  However, the two best solutions both use fst.
+
+
+FEMaLeCoP unique MPTP2078 problems
+----------------------------------
+
+I compared
+
+    leancop -nodef -feanosubst -dtree -learn
+
+with
+
+    leancop -nodef
+
+The first configuration solves 670, the second solves 662 problems.
+The number of unique problems for the first configuration is 33.
+That means that the union of first and second configuration proves 695 problems.
+This is a plus of 4.98% with respect to the second configuration.
+Still, in the FEMaLeCoP paper, it is claimed that machine learning adds
+90 problems (15.7%) wrt original solutions.
+
+Cezary told me that Josef could look at his experiment data
+after the LPAR deadline.
+
+
+
 13.01.2016
 ==========
 
