@@ -1,3 +1,34 @@
+18.01.2016
+==========
+
+
+Tests with size heuristic
+-------------------------
+
+After discussion with Cezary, I created a non-machine-learning heuristic
+for monteCoP that rates prover states by the sizes of the remaining goals.
+As first test, I ran the new heuristic on all MPTP2078 problems that
+a single lazyCoP strategy could solve in 1s:
+
+    for i in `cd out/bushy/1s/lazycop-161209-single/ && grep -l Theorem *`; do echo $i; /usr/bin/time -o out/bushy/5s/montecop-lessnaive/$i.time timeout 5 ../montecop.native -mlreward 0 -sizereward 1 -clascore const -maxiters 100 -simdepth 10 bushy/$i > out/bushy/5s/montecop-lessnaive/$i; done
+
+This solved 303 problems, compared to 457 problems for lazyCoP.
+To find out how to improve that result, I checked the times lazyCoP required
+for the problems that monteCoP was not able to solve:
+
+    for i in `cd 5s/montecop-lessnaive/ && grep -l Unknown *.p`; do echo `head -1 1s/lazycop-161209-single/$i.time` $i; done | sort -n
+
+This indicated for example the problem `orders_2__t82_orders_2.p`, which
+lazyCoP could solve in around 0.00s, but monteCoP frequently required around
+5s to 20s.
+
+Tomorrow, I want to look into, say, the five problems with the greatest
+time difference, and see how to improve the monteCoP performance on them.
+Furthermore, I want to also try the dampening of probabilities of
+previously used contrapositives on paths.
+
+
+
 16.01.2016
 ==========
 
