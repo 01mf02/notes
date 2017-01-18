@@ -2,12 +2,17 @@ Zukunft
 =======
 
 * 1.2.: MIP-Seminar & Generische Kompetenzen anmelden
+* 1.2.: Nachwuchsförderung 2017 nachprüfen
 * 11.2.: CADE abstract
 * 18.2.: CADE paper
 * 26.3--30.3: AITP
 * 8.4.: CADE rebuttal
+* 18.4.: TABLEAUX Abstract submission
 * 22.4.: CADE notification
+* 25.4.: TABLEAUX Paper submission
 * 27.5.: CADE final version
+* 8.6.: TABLEAUX Notification of paper decisions
+* 3.7.: TABLEAUX Camera-ready papers due
 
 
 Monatsplan (1.1. -- 31.1.)
@@ -28,6 +33,18 @@ Wochenplan (16.1. -- 22.1.)
     - Check unique problems for FEMaLeCoP (15min)
     - Implement random rollout policy (15min)
     - Look at ParamILS results (30min)
+
+* Di:
+    - New naive heuristic (3h)
+
+* Mi:
+    - Make new heuristic usable (1.5h)
+    - Test new heuristic (1.5h)
+
+* Do:
+    - Test five problems where lazyCoP performs fastest (10min)
+    - Generate statistics for path dampening (30min)
+    - Improve monteCoP (2h)
 
 TODO:
 
