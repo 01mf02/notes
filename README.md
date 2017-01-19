@@ -1,3 +1,52 @@
+19.01.2016
+==========
+
+
+Bash-fu
+-------
+
+To obtain a list of uniquely solved problems sorted by processing time:
+
+    for i in `comm -23 solved/bushy/1s/lazycop-170118-single solved/bushy/1s/montecop-170118-sr`; do echo `head -1 out/bushy/1s/lazycop-170118-single/$i.time` $i; done | sort -n | awk '{print $7}'
+
+To then link a list of problems to the size of the problem:
+
+    for i in `cat sorted`; do wc -l bushy/$i; done
+
+
+Strange monteCoP divergence
+---------------------------
+
+I analysed the monteCoP performance on the problem `enumset1__t93_enumset1.p`
+and created a shorter version of it:
+
+~~~
+fof(rotate2, conjecture, (! [A] :  (! [B] :  (! [C] : p(A,B,C)=p(C,A,B)) ) ) ).
+fof(rotate1, axiom,      (! [A] :  (! [B] :  (! [C] : p(A,B,C)=p(B,C,A)) ) ) ).
+~~~
+
+When running monteCoP with this problem, such as
+
+    ./montecop.native rotate.p -mlreward 0 -simdepth 5 -seed 3
+
+then it succeeds immediately for many seeds (8 out of the first 10).
+However, in the case of seeds 3 and 6, for example,
+it gets stuck and does not even finish after 30 seconds.
+Interestingly, this seems to be independent of many settings,
+such as size reward, clause weight, or dampening of previous contrapositives.
+The proof length increases steadily, though.
+
+In comparison, lazyCoP (without cut or with cut does not matter)
+needs only 9 inferences for the same problem (depth 3).
+
+My hypothesis is that if even the resolution of such a small problem
+depends so greatly on chance, then this approach will not work
+for larger problems.
+The conclusion is that I need to figure out why exactly monteCoP gets stuck.
+Debugging ahead! :)
+
+
+
 18.01.2016
 ==========
 
