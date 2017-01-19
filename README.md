@@ -1,3 +1,83 @@
+18.01.2016
+==========
+
+
+Tests with size heuristic
+-------------------------
+
+After discussion with Cezary, I created a non-machine-learning heuristic
+for monteCoP that rates prover states by the sizes of the remaining goals.
+As first test, I ran the new heuristic on all MPTP2078 problems that
+a single lazyCoP strategy could solve in 1s:
+
+    for i in `cd out/bushy/1s/lazycop-161209-single/ && grep -l Theorem *`; do echo $i; /usr/bin/time -o out/bushy/5s/montecop-lessnaive/$i.time timeout 5 ../montecop.native -mlreward 0 -sizereward 1 -clascore const -maxiters 100 -simdepth 10 bushy/$i > out/bushy/5s/montecop-lessnaive/$i; done
+
+This solved 303 problems, compared to 457 problems for lazyCoP.
+To find out how to improve that result, I checked the times lazyCoP required
+for the problems that monteCoP was not able to solve:
+
+    for i in `cd 5s/montecop-lessnaive/ && grep -l Unknown *.p`; do echo `head -1 1s/lazycop-161209-single/$i.time` $i; done | sort -n
+
+This indicated for example the problem `orders_2__t82_orders_2.p`, which
+lazyCoP could solve in around 0.00s, but monteCoP frequently required around
+5s to 20s.
+
+Tomorrow, I want to look into, say, the five problems with the greatest
+time difference, and see how to improve the monteCoP performance on them.
+Furthermore, I want to also try the dampening of probabilities of
+previously used contrapositives on paths.
+
+
+
+16.01.2016
+==========
+
+
+ParamILS results
+----------------
+
+I looked at the results of the evaluation from 12.01.2016.
+Some observations:
+
+* The most successful extension probability heuristic was
+  the naive inverse one in 31 cases and FEMaLe in a single (!) case.
+* The maximum number of MC iterations was always the
+  smallest available value, namely 25 (others were 50 and 100).
+* The simulation depth also all converged to values between 10 and 20
+  (others were 40 and 80).
+* The machine learning evaluation heuristic seems to be only partially
+  successful: 14 times its influence was 0, 8 times it was 0.5, and
+  7 times it was 1. Even the second-best overall solution has an
+  ML influence of 0 -- interestingly coupled with a naive reward
+  that is also 0. That means that the second-best solution has
+  an evaluation heuristic that gives a uniform score of 0!
+* The best expansion policy is 20 times cutlit and 12 times fst.
+  However, the two best solutions both use fst.
+
+
+FEMaLeCoP unique MPTP2078 problems
+----------------------------------
+
+I compared
+
+    leancop -nodef -feanosubst -dtree -learn
+
+with
+
+    leancop -nodef
+
+The first configuration solves 670, the second solves 662 problems.
+The number of unique problems for the first configuration is 33.
+That means that the union of first and second configuration proves 695 problems.
+This is a plus of 4.98% with respect to the second configuration.
+Still, in the FEMaLeCoP paper, it is claimed that machine learning adds
+90 problems (15.7%) wrt original solutions.
+
+Cezary told me that Josef could look at his experiment data
+after the LPAR deadline.
+
+
+
 13.01.2016
 ==========
 
