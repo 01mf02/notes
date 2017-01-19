@@ -8,6 +8,7 @@ Zukunft
 * 8.4.: CADE rebuttal
 * 22.4.: CADE notification
 * 27.5.: CADE final version
+* 6.8.--11.8.: CADE (Göteborg)
 
 
 Monatsplan (1.1. - 31.1.)
@@ -40,10 +41,11 @@ Wochenplan (9.1. - 16.1.)
     - Sylpheed-Antwortfunktion reparieren (30min)
     - CADE-Details prüfen (Vorlage, Seitenzahl etc.) (1h)
     - Integration Review-Kommentare (2h)
+
+    - UCT + Pseudocode schreiben (3h)
     - Satallax-ML-Artikel und PAAR in Wiki eintragen (30min)
     - Artikel auf Webseite aktualisieren (30min)
     - Evaluationsplan monteCoP/FEMaLeCoP/randoCoP (3h)
-    - UCT + Pseudocode schreiben (3h)
     - Treffen Cezary (1h)
 
 Weitere monteCoP-Themen:
