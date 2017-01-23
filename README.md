@@ -10,8 +10,10 @@ not being given reward and visit count. This caused the Monte Carlo tree
 to be expanded almost only in a single direction, not considering
 many options that were just below the root.
 This change caused the number of bushy problems solved in 1s to increase
-from 96 to 266! And in addition to that, I now have the option
-to create graphs of the Monte Carlo trees.
+from 96 to 266! lazyCoP solves 457 problems, and monteCoP adds
+**51** new problems!
+And in addition to that, I now have the option to create
+graphs of the Monte Carlo trees.
 (This was crucial in finding the bug.)
 
 Lesson learnt: Visualise your information!
