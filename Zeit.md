@@ -13,6 +13,7 @@ Zukunft
 * 27.5.: CADE final version
 * 8.6.: TABLEAUX Notification of paper decisions
 * 3.7.: TABLEAUX Camera-ready papers due
+* 6.8.--11.8.: CADE (Göteborg)
 
 
 Monatsplan (1.1. -- 31.1.)
