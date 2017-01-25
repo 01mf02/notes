@@ -46,8 +46,6 @@ adds to all previously found problems.
 
 
 
-
-
 Varying simulation depth influence
 ----------------------------------
 
