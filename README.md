@@ -1,3 +1,41 @@
+24.01.2016
+==========
+
+
+monteCoP cut revisited
+----------------------
+
+I tried to run monteCoP with the cut expansion policy,
+both on literals and clauses.
+For literals, it solved 283 problems and for clauses even 293,
+compared to only 266 with the default expansion policy.
+My fear that with cut, complementarity toward lazyCoP could be lost,
+was not fulfilled:
+Even when comparing monteCoP + cut (clauses) with lazyCoP + cut,
+monteCoP proves **60** unique problems -- a plus of about **13%**!
+
+
+monteCoP simulation depth
+-------------------------
+
+Just for fun, I tried setting the simulation depth to zero.
+The result was quite bad; it solved only 154 problems.
+Still, it would be nice to include a graph that shows the
+number of solved problems as a function of simulation depth.
+
+
+Dampening of previously encountered contrapositives
+---------------------------------------------------
+
+When a contrapositive has already been used on the current branch,
+then the antecedent dampening constant will reduce the probability
+of choosing the contrapositive again, based on the number of times
+it has been used.
+This increases the number of solved problems (without cut) from
+266 to 276 when using a dampening of 0.3.
+
+
+
 23.01.2016
 ==========
 
@@ -17,6 +55,9 @@ graphs of the Monte Carlo trees.
 (This was crucial in finding the bug.)
 
 Lesson learnt: Visualise your information!
+
+
+./montecop.native problems/rotate.p -mlreward 0 -sizereward 1 -simdepth 5 -seed 3 -maxiters 50 -dotout test.dot && dot -Tps test.dot -o test.ps
 
 
 
