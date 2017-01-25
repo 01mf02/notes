@@ -1,3 +1,101 @@
+25.01.2016
+==========
+
+
+Greedy set cover
+----------------
+
+I wrote a little Haskell script that takes a list of files as arguments.
+Each file should contain a list of problems solved, one per line.
+The script then iteratively gets the next file the solves a maximum number
+of problems that all the previous ones were not able to solve.
+Code:
+
+~~~ haskell
+import Data.List (maximumBy, delete)
+import Data.Ord (comparing)
+import Data.Set (Set)
+import qualified Data.Set as Set
+import System.Environment (getArgs)
+
+greedy :: (Ord a, Eq t) => Set a -> [(t, Set a)] -> [(t, Int)]
+greedy elems [] = []
+greedy elems sets =
+  let sets' = map (\ (name, set) -> (name, Set.difference set elems)) sets
+      (name, set) = maximumBy (comparing (Set.size . snd)) sets'
+  in  (name, Set.size set) : greedy (Set.union elems set) (delete (name, set) sets')
+
+main =
+  getArgs >>=
+  mapM (\ fp -> readFile fp >>= \ f -> return (fp, Set.fromList (lines f))) >>=
+  return . greedy Set.empty >>=
+  mapM print
+~~~
+
+The first four lines of output on my recently generated configurations are:
+
+~~~
+("lazycop-170118-single",450)
+("montecop-170123-srsd24",59)
+("montecop-170123-srcc",11)
+("lazycop-170118-nocut",7)
+~~~
+
+The numbers behind the configuration show how many problems the configuration
+adds to all previously found problems.
+
+
+
+
+
+Varying simulation depth influence
+----------------------------------
+
+I made a Makefile meta-rule (using `define` macros) that generates
+Makefile recipes in dependency of some parameter, in this case
+maximal simulation depth.
+That allows me to run an arbitrary number of different configuration values
+for all problem files without blowing up the Makefile.
+Unfortunately, I have to pay this price with an increase of the Makefile
+processing time from around 3s to 12s (by auto-generating 128 recipes).
+For that reason, I commented out the rule generation, and it takes only
+to remove a `#` to enable it back.
+To visualise simulation depth influence, I use:
+
+~~~
+make out/bushy/1s/montecop-170123-srsd
+for i in 0 1 2 4 8 16 24 32 64; do make solved/bushy/1s/montecop-170123-srsd$i; done
+cd solved/bushy/1s
+for i in 0 1 2 4 8 16 24 32 64; do echo $i `wc -l montecop-170123-srsd$i | awk '{print $1}'`; done > graphdata
+gnuplot -e "set term png; set output 'gnuplot.png'; plot 'graphdata' with linespoints"
+~~~
+
+For the moment, the value 24 has brought the best results, yielding
+296 solved problems. I will nevertheless run another evaluation on the server,
+to have more data and to see how much the results vary due to randomness.
+
+
+Problems only monteCoP can solve
+--------------------------------
+
+I analysed which problems neither lazyCoP with nor without cut
+can solve, but some monteCoP configuration can.
+So far, I found 26 such problems.
+
+Of these, the shortest are `wellord1__t52_wellord1.p` and
+`xboole_1__t116_xboole_1.p` -- both have 6 lines.
+However, `wellord1__t52_wellord1.p` gives a stack overflow
+when run with lazyCoP. monteCoP solves the problem.
+
+    ./montecop.native -mlreward 0 -sizereward 1 -exppol cutlit eval/bushy/xboole_1__t116_xboole_1.p
+
+However, I was not able to quickly find another seed with which
+monteCoP succeeded, so it was a bit of a luck find.
+Anyway, the proof is 23 steps long, and goes to depth 11,
+which is why lazyCoP is not able to find it.
+
+
+
 24.01.2016
 ==========
 
