@@ -1,3 +1,45 @@
+26.01.2016
+==========
+
+
+Hybrid system performance
+-------------------------
+
+I tested monteCoP in hybrid mode, where the outcome of Monte Carlo Tree Search
+is used to guide a modified lazyCoP.
+Similarly to the experiments with varying simulation depth,
+I varied the maximal number of MCTS iterations per lazyCoP inference
+from 8, 16, 32, 64.
+
+Iterations | Solved
+----------:|------:
+         8 |    338
+        16 |    342
+        32 |    327
+        64 |    314
+
+I expected that hybrid monteCoP would prove more problems than stand-alone
+monteCoP, but that it would prove less unique problems.
+That does not seem to be the case, as with 16 iterations,
+the number of unique problems is 59, compared to 60 for stand-alone monteCoP.
+
+
+Better graph creation
+---------------------
+
+For a larger set of parameters, the method I showed yesterday is cumbersome.
+An improved method with smoothed Bézier plot follows:
+
+    make `ls out/bushy/1s | grep srsd | awk '{print "solved/bushy/1s/" $1}'`
+    wc -l solved/bushy/1s/*srsd* | sed \$d | awk '{print $2 " " $1}' | sed 's/.*srsd//' | sort -n > graphdata
+    gnuplot -e "set term png; set output 'gnuplot.png'; plot 'graphdata' notitle with linespoints, 'graphdata' notitle smooth bezier with lines"
+
+`sed \$d` is a nifty command to display every but the last input line.
+
+
+
+
+
 25.01.2016
 ==========
 
@@ -152,8 +194,10 @@ graphs of the Monte Carlo trees.
 
 Lesson learnt: Visualise your information!
 
+To create an output graph with monteCoP, use the following example
+that prints the Monte Carlo tree after 50 iterations and then quits:
 
-./montecop.native problems/rotate.p -mlreward 0 -sizereward 1 -simdepth 5 -seed 3 -maxiters 50 -dotout test.dot && dot -Tps test.dot -o test.ps
+    ./montecop.native problems/rotate.p -mlreward 0 -sizereward 1 -simdepth 5 -seed 3 -maxiters 50 -dotout test.dot && dot -Tps test.dot -o test.ps
 
 
 
