@@ -210,7 +210,12 @@ Bash-fu
 
 To obtain a list of uniquely solved problems sorted by processing time:
 
-    for i in `comm -23 solved/bushy/1s/lazycop-170118-single solved/bushy/1s/montecop-170118-sr`; do echo `head -1 out/bushy/1s/lazycop-170118-single/$i.time` $i; done | sort -n | awk '{print $7}'
+~~~ bash
+for i in `comm -23 solved/bushy/1s/lazycop-170118-single solved/bushy/1s/montecop-170118-sr`
+do
+  echo `head -1 out/bushy/1s/lazycop-170118-single/$i.time` $i
+done | sort -n | awk '{print $7}'
+~~~
 
 To then link a list of problems to the size of the problem:
 
@@ -262,7 +267,15 @@ for monteCoP that rates prover states by the sizes of the remaining goals.
 As first test, I ran the new heuristic on all MPTP2078 problems that
 a single lazyCoP strategy could solve in 1s:
 
-    for i in `cd out/bushy/1s/lazycop-161209-single/ && grep -l Theorem *`; do echo $i; /usr/bin/time -o out/bushy/5s/montecop-lessnaive/$i.time timeout 5 ../montecop.native -mlreward 0 -sizereward 1 -clascore const -maxiters 100 -simdepth 10 bushy/$i > out/bushy/5s/montecop-lessnaive/$i; done
+~~~ bash
+for i in `cd out/bushy/1s/lazycop-161209-single/ && grep -l Theorem *`
+do
+  echo $i
+  /usr/bin/time -o out/bushy/5s/montecop-lessnaive/$i.time timeout 5 \
+    ../montecop.native -mlreward 0 -sizereward 1 -clascore const -maxiters 100 -simdepth 10 \
+    bushy/$i > out/bushy/5s/montecop-lessnaive/$i
+done
+~~~
 
 This solved 303 problems, compared to 457 problems for lazyCoP.
 To find out how to improve that result, I checked the times lazyCoP required
@@ -677,7 +690,14 @@ performance, namely to an average of only **418** UCT iterations in 0.45s.
 
 The evaluation code is:
 
-    make montecop.native && time for i in {1,2,3,4,5,6,7,8,9}; do ./montecop.native -maxiters 100 eval/tptp/PUZ035-1.p -learn -datai datab -clascore 3 -seed $i | grep Iters; done | awk '{total += $5} END {print total/NR}'
+~~~ bash
+make montecop.native
+time for i in {1,2,3,4,5,6,7,8,9}
+do
+  ./montecop.native -maxiters 100 eval/tptp/PUZ035-1.p \
+    -learn -datai datab -clascore 3 -seed $i | grep Iters
+done | awk '{total += $5} END {print total/NR}'
+~~~
 
 
 
@@ -879,8 +899,13 @@ Finding problems not solved by any prover
 
 We can use this to calculate the ratio of inferences for unsolved problems:
 
-    for i in `comm -12 lcunsolved ocunsolved`; do echo $i `grep Inf oraclecop/$i` `grep Inf lazycop/$i`; done > merged
-    cat merged | awk '{sum+=$15/($4+$6); count++} END {print sum/count}'
+~~~ bash
+for i in `comm -12 lcunsolved ocunsolved`
+do
+  echo $i `grep Inf oraclecop/$i` `grep Inf lazycop/$i`
+done > merged
+cat merged | awk '{sum+=$15/($4+$6); count++} END {print sum/count}'
+~~~
 
 The result is 1062.16.
 
@@ -922,8 +947,13 @@ The average ratio of inferences is 13.1609, meaning that on average
 lazyCoP took 13 times as many inferences as oracleCoP.
 This average was obtained by:
 
-    for i in `comm -12 solved/bushy/100s/lazycop solved/bushy/100s/oraclecop`; do echo $i `grep Inf out/bushy/100s/oraclecop/$i` `grep Inf out/bushy/100s/lazycop/$i`; done > merged
-    cat merged | awk '{sum+=$15/($4+$6); count++} END {print sum/count}'
+~~~ bash
+for i in `comm -12 solved/bushy/100s/lazycop solved/bushy/100s/oraclecop`
+do
+  echo $i `grep Inf out/bushy/100s/oraclecop/$i` `grep Inf out/bushy/100s/lazycop/$i`
+done > merged
+cat merged | awk '{sum+=$15/($4+$6); count++} END {print sum/count}'
+~~~
 
 
 
@@ -1949,7 +1979,10 @@ furthermore a file 'statements' which has on each line a TPTP axiom with
 a conjecture name, construct a set of files which corresponds to the
 problems consisting of the conjecture and the dependencies used to prove it:
 
-    perl -e 'open(F,"statements"); while(<F>) {m/^fof.([^,]*),/ or die; $h{$1}=$_} while(<>) {m/(.*):(.+)/; ($c,$r)=($1,$2); @r=split(" ",$r); $d=$h{$c}; $d=~ s/, axiom,/, conjecture,/; open(G,">problems/$c"); foreach $k (@r) {print G $h{$k}}; print G $d; close G}' deps.a
+    perl -e 'open(F,"statements"); while(<F>) {m/^fof.([^,]*),/ or die; \
+      $h{$1}=$_} while(<>) {m/(.*):(.+)/; ($c,$r)=($1,$2); @r=split(" ",$r); \
+      $d=$h{$c}; $d=~ s/, axiom,/, conjecture,/; open(G,">problems/$c"); \
+      foreach $k (@r) {print G $h{$k}}; print G $d; close G}' deps.a
 
 Courtesy of Josef Urban, master of Perl one-liner technology.
 Takes about three seconds to construct 32000 problems.
@@ -4173,9 +4206,16 @@ Satallax compilation issues
 Bug? Compiling Satallax 2.8 only works if I copy dllminisatinterface.so from Satallax 2.7 to bin. Else I get:
 
 ~~~
-ocamlc  -I bin -o bin/satallax unix.cma /home/mfaerber/satallax-2.8/bin/dllminisatinterface.so bin/minisatinterface.cmo bin/syntax.cmo bin/config.cmo bin/flags.cmo bin/match.cmo bin/priorityqueue.cmo bin/state.cmo bin/search.cmo bin/refutation.cmo bin/flag.cmo bin/litcount.cmo bin/branch.cmo bin/step.cmo bin/suche.cmo bin/norm.cmo bin/translation.cmo bin/coq.cmo bin/latex.cmo bin/proofterm.cmo bin/coqlexer.cmo bin/coqparser.cmo bin/tptp_lexer.cmo bin/formula.cmo bin/tptp_config.cmo bin/tptp_parser.cmo bin/version.cmo bin/satallaxmain.cmo bin/satallax.cmo
+ocamlc  -I bin -o bin/satallax unix.cma /home/mfaerber/satallax-2.8/bin/dllminisatinterface.so \
+  bin/minisatinterface.cmo bin/syntax.cmo bin/config.cmo bin/flags.cmo bin/match.cmo \
+  bin/priorityqueue.cmo bin/state.cmo bin/search.cmo bin/refutation.cmo bin/flag.cmo \
+  bin/litcount.cmo bin/branch.cmo bin/step.cmo bin/suche.cmo bin/norm.cmo bin/translation.cmo \
+  bin/coq.cmo bin/latex.cmo bin/proofterm.cmo bin/coqlexer.cmo bin/coqparser.cmo \
+  bin/tptp_lexer.cmo bin/formula.cmo bin/tptp_config.cmo bin/tptp_parser.cmo bin/version.cmo \
+  bin/satallaxmain.cmo bin/satallax.cmo
 File "_none_", line 1:
-Error: Error on dynamically loaded library: /home/mfaerber/satallax-2.8/bin/dllminisatinterface.so: /home/mfaerber/satallax-2.8/bin/dllminisatinterface.so: undefined symbol: _ZTVN10__cxxabiv117__class_type_infoE
+Error: Error on dynamically loaded library: /home/mfaerber/satallax-2.8/bin/dllminisatinterface.so: \
+  /home/mfaerber/satallax-2.8/bin/dllminisatinterface.so: undefined symbol: _ZTVN10__cxxabiv117__class_type_infoE
 ~~~
 
 
@@ -5304,9 +5344,9 @@ Checkpointing HOL4
 
 I tried to checkpoint HOL4 with dmtcp to have a uniform way of creating
 checkpoints between HOL4 and HOL Light, but this turned out to be a real bitch.
-The problem was the HOL4 creates files of the format ~/.polyml/poly-stats-$pid,
+The problem was the HOL4 creates files of the format `~/.polyml/poly-stats-$pid`,
 and deletes them again as soon as it quits. However, when rerunning a
-checkpointed HOL4 instance, it would not find its corresponding poly-stats-$pid,
+checkpointed HOL4 instance, it would not find its corresponding `poly-stats-$pid`,
 because its original instance would have quit and deleted it. After fiddling
 with this for four hours, I discovered the really nice interface of Poly/ML to
 checkpoint it natively, and now I'm happily using this. It seems to work well
