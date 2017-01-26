@@ -37,6 +37,23 @@ An improved method with smoothed Bézier plot follows:
 `sed \$d` is a nifty command to display every but the last input line.
 
 
+Skolemisation without content names
+-----------------------------------
+
+I looked at the problem `wellord1__t52_wellord1.p` and found monteCoP
+to solve it regularly with different seeds, whereas lazyCoP was not
+able to solve it at all.
+However, when I enabled "-nocontent" for smaller names for graph generation,
+monteCoP could not solve the problem anymore.
+
+I found out that with content-name based Skolemisation,
+several existentials were mapped to the same Skolem function,
+which apparently facilitated proof search.
+Therefore, I adapted the non-content-name based Skolemisation
+to reuse Skolem indices when encountering an existential
+that is equivalent to another existential previously Skolemised.
+
+I want to investigate whether the current Skolemisation is really sound.
 
 
 
