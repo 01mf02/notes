@@ -1,4 +1,4 @@
-26.01.2016
+26.01.2017
 ==========
 
 
@@ -57,7 +57,7 @@ I want to investigate whether the current Skolemisation is really sound.
 
 
 
-25.01.2016
+25.01.2017
 ==========
 
 
@@ -153,7 +153,7 @@ which is why lazyCoP is not able to find it.
 
 
 
-24.01.2016
+24.01.2017
 ==========
 
 
@@ -191,7 +191,7 @@ This increases the number of solved problems (without cut) from
 
 
 
-23.01.2016
+23.01.2017
 ==========
 
 
@@ -218,7 +218,7 @@ that prints the Monte Carlo tree after 50 iterations and then quits:
 
 
 
-19.01.2016
+19.01.2017
 ==========
 
 
@@ -272,7 +272,7 @@ Debugging ahead! :)
 
 
 
-18.01.2016
+18.01.2017
 ==========
 
 
@@ -311,14 +311,14 @@ previously used contrapositives on paths.
 
 
 
-16.01.2016
+16.01.2017
 ==========
 
 
 ParamILS results
 ----------------
 
-I looked at the results of the evaluation from 12.01.2016.
+I looked at the results of the evaluation from 12.01.2017
 Some observations:
 
 * The most successful extension probability heuristic was
@@ -360,7 +360,7 @@ after the LPAR deadline.
 
 
 
-13.01.2016
+13.01.2017
 ==========
 
 
@@ -379,7 +379,7 @@ but I found it after two minutes of grepping the source code. :)
 
 
 
-12.01.2016
+12.01.2017
 ==========
 
 
@@ -459,7 +459,7 @@ resulted in errors.)
 
 
 
-10.01.2016
+10.01.2017
 ==========
 
 
@@ -472,7 +472,7 @@ Cezary's Writing Advice
 
 
 
-07.01.2016
+07.01.2017
 ==========
 
 
@@ -484,8 +484,8 @@ I documented my learning under: http://gedenkt.at/blog/falling-in-love-with-rack
 
 
 
-5.1.2016
-========
+05.01.2017
+==========
 
 
 Verifying FEMaLeCoP results
@@ -564,8 +564,8 @@ any calculations related to machine-learning.
 
 
 
-2.1.2016
-========
+02.01.2017
+==========
 
 
 Plotting integrated data with `awk`
