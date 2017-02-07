@@ -1,3 +1,101 @@
+07.02.2017
+==========
+
+
+Normed Naive Bayesian Transition Probability
+--------------------------------------------
+
+To determine which transition to take in a random simulation,
+I have experimented with Naive Bayes similarly to FEMaLeCoP,
+but a recurring problem was that the probabilities were
+much too small.
+
+Furthermore, I noticed that it is not sufficient to just
+consider the intersection of current features and training features,
+because that actually punishes the intersection of features
+instead of encouraging it.
+Only when the "punishment" is compensated by an even more severe
+punishment of disjoint features, it is fair.
+
+To norm the label probability, we subtract from the
+(logarithmic) label probability the
+*largest* label probability for all currently compared labels.
+That means that the normed label probability of the label with
+the highest label probability will be 1.
+
+To norm the feature probabilities, we calculate the
+intersecting feature probabilities and the number of disjoint features.
+The disjoint features are weighted with the
+*smallest* intersecting feature probability among all comparing
+label probabilities.
+That means that we attribute to features present in the current situation,
+but not having been present in the training example,
+the worst probability of any present feature.
+Then, the mean of the (logarithmic) feature probabilities is taken.
+
+To the sum of normed label and feature probabilities,
+we apply a normalisation function, to exclude cases
+where the probability is still too small.
+
+These measures have so far not brought a substantial improvement over
+the inverse size heuristic.
+However, I tested them only on `wellord1__t52_wellord1.p` so far,
+so a larger test on the whole MPTP2078 might bring different results.
+
+
+Discrimination Power of State Reward Heuristics
+-----------------------------------------------
+
+We want to measure how well our state reward heuristics are able to
+discriminate states that led to a found proof from states
+that do not lead to a found proof.
+For this, we calculate the ratio of:
+
+* the average rewards of direct ancestors of a proof state, and
+* the average rewards of all siblings of direct ancestors of a proof state.
+
+
+One-liner to get average value of parameter
+-------------------------------------------
+
+Given files with lots of lines like:
+
+    % Inf: 5 UCTIters: 34 UCTInf: 270 UCTSimSteps: 366 UCTDiscr: 1.057516 Depth: 0 DInf: 5 Str: 1
+
+To get the average of the UCTDiscr values, use `sed` + `awk`:
+
+    sed -n 's/.*UCTDiscr: \(\S*\).*/\1/p' *.p | awk '{s+=$1; n++} END {print s/n}'
+
+Here, the `\S` matches non-whitespace.
+In case one needs to explicitly match floating-point numbers, use:
+
+    sed -n 's/.*UCTDiscr: \([0-9]*\.[0-9]*\).*/\1/p' *.p
+
+
+Queuing commands
+----------------
+
+When I have a command `a` that is taking some time and I want to
+schedule command `b` to be executed when `a` has terminated,
+I can press CTRL-z while `a` is running, then run
+
+    fg; b
+
+Found at: <http://stackoverflow.com/a/35587710/4112904>
+
+
+Renaming Git tags
+-----------------
+
+    git tag new old
+    git tag -d old
+    git push origin :refs/tags/old
+    git push --tags
+
+Found at: <http://stackoverflow.com/a/5719854/4112904>
+
+
+
 26.01.2017
 ==========
 
