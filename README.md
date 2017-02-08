@@ -1,3 +1,53 @@
+08.02.2017
+==========
+
+
+Smooth Bézier plots
+-------------------
+
+Cezary was interested to know how I made a Bézier interpolation
+for my plots. Here is the code:
+
+~~~ tex
+\begin{tikzpicture}
+\begin{axis}
+\addplot +[no markers, raw gnuplot] gnuplot {
+        plot 'data.txt' smooth sbezier;
+};
+\addplot +[no markers, raw gnuplot] gnuplot {
+        plot 'data.txt';
+};
+\end{axis}
+\end{tikzpicture}
+~~~
+
+Unfortunately, this requires `pdflatex` to be run with `-shell-escape`.
+But the plots do look quite pretty ... :)
+
+
+Bob Veroff's hints technique
+----------------------------
+
+Taken from my old notes:
+
+Record intermediate lemmata that were generated during Prover9 proof search,
+then give high weight to them when encountered in new problem.
+Does not consider prover state!
+
+Works well in Prover9, but for Mizar, it is less successful
+(possibly because of smaller domain).
+
+
+Constant weighting
+------------------
+
+Also taken from my old notes:
+
+In E, constant weighting can be learnt from previous proofs.
+This is probably less powerful than ML internal guidance, but faster.
+
+
+
 07.02.2017
 ==========
 
