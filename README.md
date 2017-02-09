@@ -1,3 +1,46 @@
+09.02.2017
+==========
+
+
+Literal Refutability Woes
+-------------------------
+
+I tried the literal refutability reward on PUZ035-1.p as follows:
+
+    ./montecop.native -nodefcnf -ldata PUZ035-1.trace eval/tptp/PUZ035-1.p
+
+With `mlmean` = harm, this takes 47.283s;
+with `mlmean` = min, this takes 6.107s.
+
+This is quite good when one considers that with e.g.
+
+    ./montecop.native eval/tptp/PUZ035-1.p -mlreward 0 -naivereward 1
+
+monteCoP runs for more than one minute without finding the proof.
+
+However, this is quite bad when one knows that
+leanCoP proves the same problem after 919 inferences at depth 6
+(without cut).
+
+    ./lazycop.native eval/tptp/PUZ035-1.p -nodefcnf -nocut3 -nocut2 -nocut1
+
+Perhaps there is another bug lurking?
+The Monte Carlo tree looked quite decent, meaning that it looked balanced
+and there were hardly any remaining unvisited states at the top.
+Furthermore, in the monteCoP proofs, lemma steps appeared,
+so that is also working.
+
+Interestingly enough, with the cut expansion policy,
+the proof is found in under one second:
+
+    ./montecop.native eval/tptp/PUZ035-1.p -mlreward 0 -exppol cutlit
+
+Still, the number of UCT iterations (9557) is still much too high for my taste.
+Furthermore, when using the `maxiters` switch to enable the hybrid prover,
+the proof is also found blazingly fast (0.034s for `maxiters` = 100).
+
+
+
 08.02.2017
 ==========
 
