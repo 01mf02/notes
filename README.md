@@ -35,9 +35,17 @@ the proof is found in under one second:
 
     ./montecop.native eval/tptp/PUZ035-1.p -mlreward 0 -exppol cutlit
 
-Still, the number of UCT iterations (9557) is still much too high for my taste.
+Still, the number of UCT iterations (9557) is much too high for my taste.
 Furthermore, when using the `maxiters` switch to enable the hybrid prover,
 the proof is also found blazingly fast (0.034s for `maxiters` = 100).
+
+**UPDATE**: I think I figured out why monteCoP performs so badly here:
+The proof of PUZ035-1.p is relatively long, involving more than 40 steps,
+but the required depth (6) is relatively small.
+My hypothesis is that when running monteCoP without the cut expansion policy,
+the proof search will be exponential in the number of *proof steps* required,
+whereas in leanCoP, it will be exponential in the required *depth*.
+This is a crucial difference.
 
 
 
