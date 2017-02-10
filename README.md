@@ -1,3 +1,25 @@
+10.02.2017
+==========
+
+
+Push Git tags automatically
+---------------------------
+
+Again, I forgot to push my new Git tags.
+To push tags automatically, I read at
+<http://stackoverflow.com/a/3745250/7379374> that
+you can add the following to your repository's config:
+
+    [remote "origin"]
+        url = ...
+        fetch = ...
+        push = +refs/tags/*
+
+However, I still have to do that change on every clone
+of the repository.
+
+
+
 09.02.2017
 ==========
 
