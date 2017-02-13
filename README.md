@@ -1,3 +1,19 @@
+13.02.2017
+==========
+
+
+Solved files per configuration
+------------------------------
+
+For every prover configuration, build the number of solved files:
+
+    make `ls -d out/bushy/10s/* | sed 's|out|solved|'`
+
+`ls -d dir/*` prints all files in `dir` in the format `dir/a dir/b`
+instead of just `a b`.
+
+
+
 10.02.2017
 ==========
 
