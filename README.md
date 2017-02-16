@@ -1,3 +1,37 @@
+16.02.2017
+==========
+
+
+From raw data to a nice table
+-----------------------------
+
+To create detailed statistics from a Monte Carlo prover configuration, run
+
+    for config in -randrew -sizerew -mlrew -bayesprob -constprob -cutcla -nocut ""; do
+      echo -en "${config}\t";
+      grep UCT out/bushy/10s/defcnf/montecop-170209${config}/*.p |
+        grep -v nan | sed 's|/| |g' |
+        sed 's/.*UCTIters: \(\S*\) .* UCTSimSteps: \(\S*\) UCTDiscr: /\1 \2 /' |
+        awk '{for (i=1;i<=NF;i++){a[i]+=$i;}} END {for (i=1;i<=NF;i++){printf "%.2f", a[i]/NR; printf "\t"}; print NR}';
+    done
+
+An especially nice part is the `awk` command to create averages of all columns:
+
+    awk '{for (i=1;i<=NF;i++){a[i]+=$i;}} END {for (i=1;i<=NF;i++){printf "%.2f", a[i]/NR; printf "\t"}; print NR}'
+
+I really start loving `awk`.
+
+Then, let us assume we have a `header` file:
+
+    Configuration | UCT iterations | UCT simulation steps | Blub | Discrimination | Solved
+    --------------|---------------:|---------------------:|------|---------------:|------:
+
+To make nicely formatted Markdown from the raw input data `in` and the header:
+
+    (cat header; sed 's/\t/ | /g' in) | pandoc -t markdown
+
+
+
 13.02.2017
 ==========
 
