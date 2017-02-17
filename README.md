@@ -1,3 +1,16 @@
+17.02.2017
+==========
+
+
+How does a conclusion look like?
+--------------------------------
+
+Searching for a kind of "model conclusion" for CADE, I found
+[Playing with AVATAR](http://www.cs.man.ac.uk/~regerg/papers/playing.pdf).
+The experiment section also looks quite nice.
+
+
+
 16.02.2017
 ==========
 
