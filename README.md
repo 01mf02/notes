@@ -2,12 +2,34 @@
 ==========
 
 
+Simulation steps per simulation depth
+-------------------------------------
+
+    for i in *simdepth*; do
+      echo -n "$i ";
+      grep UCT $i/*.p | sed 's/.*UCTSimSteps: \(\S*\).*/\1/g' |
+        awk '{sum+=$1} END {print sum/NR}';
+    done | sed 's/.*simdepth//' | sort -n
+
+
 How does a conclusion look like?
 --------------------------------
 
 Searching for a kind of "model conclusion" for CADE, I found
 [Playing with AVATAR](http://www.cs.man.ac.uk/~regerg/papers/playing.pdf).
 The experiment section also looks quite nice.
+
+
+Towards the Integration of an Intuitionistic First-Order Prover into Coq
+------------------------------------------------------------------------
+
+The headline is the title of a [paper](https://arxiv.org/abs/1606.05948)
+by Fabian Kunze presented at the HATT workshop at IJCAR'16.
+My attention was brought again to this article as Cezary mentioned
+that retrieving a sequent-style proof from a matrix proof
+(such as given by inanoCoP) has been mentioned in this paper to be solved in
+[Converting non-classical matrix proofs into sequent-style systems](http://dx.doi.org/10.1007/3-540-61511-3_104).
+This might be a doable project after all ...
 
 
 
@@ -2474,11 +2496,9 @@ these problem via
 
 and reran `make`. The result was quite surprising:
 
-~~~
-mf@grid02:~/cop/eval$ wc -l solved/leancop-2.1*
- 1985 solved/leancop-2.1
- 1985 solved/leancop-2.1-cut1
-~~~
+    mf@grid02:~/cop/eval$ wc -l solved/leancop-2.1*
+     1985 solved/leancop-2.1
+     1985 solved/leancop-2.1-cut1
 
 So actually the cut1 does not seem to have a great influence on the
 performance of leanCoP on the TPTP problems. This seems counter-intuitive
@@ -3056,10 +3076,8 @@ knn: utils.ml format.ml tfidf.ml knn.ml
 
 The new version is:
 
-~~~
-%.native: *.ml
-	ocamlbuild -libs str,unix $@
-~~~
+    %.native: *.ml
+    	ocamlbuild -libs str,unix $@
 
 I searched for a solution to include the `-inline 100 -unsafe` flags
 from ocamlopt in the `ocamlbuild` version, but failed.
@@ -4671,30 +4689,28 @@ fastxml-eval/final     1529    0.796    3.273   117.18   0.7287    54.34
 hl-knn-noidf-dw1       1529    0.824    3.504   186.12   0.9158    71.32
 
 
-~~~
-cp $FASTXML/{train,predict} ./
-cabal update
-cabal configure
-cabal build
-mkdir fastxml-eval
-dist/build/libsvm/libsvm hl/{symsn,deps.a,seq} > fastxml-eval/train
-dist/build/libsvm/libsvm hl/{symsn,deps.a,seq,eval} > fastxml-eval/eval
-runhaskell scripts/libsvm-iter.hs fastxml-eval/{eval,train}
-cd fastxml-eval
-mkdir results
-for i in eval-*
-do
-  echo $i
-  ../train train-${i##eval-}
-  ../predict $i
-  mv scores.txt results/${i##eval-}
-done
-cd results
-# make sure to delete ../final at this point if it already exists!
-for i in `ls * | sort -n`; do cat $i >> ../final; done
-cd ../..
-./statisticshl.sh --fastxml hl/eval fastxml-eval/final
-~~~
+    cp $FASTXML/{train,predict} ./
+    cabal update
+    cabal configure
+    cabal build
+    mkdir fastxml-eval
+    dist/build/libsvm/libsvm hl/{symsn,deps.a,seq} > fastxml-eval/train
+    dist/build/libsvm/libsvm hl/{symsn,deps.a,seq,eval} > fastxml-eval/eval
+    runhaskell scripts/libsvm-iter.hs fastxml-eval/{eval,train}
+    cd fastxml-eval
+    mkdir results
+    for i in eval-*
+    do
+      echo $i
+      ../train train-${i##eval-}
+      ../predict $i
+      mv scores.txt results/${i##eval-}
+    done
+    cd results
+    # make sure to delete ../final at this point if it already exists!
+    for i in `ls * | sort -n`; do cat $i >> ../final; done
+    cd ../..
+    ./statisticshl.sh --fastxml hl/eval fastxml-eval/final
 
 
 
