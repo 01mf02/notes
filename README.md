@@ -1,3 +1,86 @@
+20.02.2017
+==========
+
+
+Local optimisation
+------------------
+
+I have created a Haskell program to do a very simple optimisation of parameters.
+All values for a certain parameter are tried, then the best one is taken
+and used in the rest of the procedure for the remaining parameters.
+An example how this looks like:
+
+~~~ haskell
+import Control.Monad
+import Data.List
+import Data.Ord
+import System.Process
+import Text.Printf
+
+optimise evaluate = foldM go where
+  go prev vs = do
+    results <- mapM (\ v -> evaluate (prev ++ [v]) >>= return . (,) v) vs
+    return (prev ++ [fst (maximumBy (comparing snd) results)])
+
+eval :: [String] -> IO Int
+eval args = readProcess "./run.sh" args [] >>= return . read
+
+combine p vs = [p ++ " " ++ v | v <- vs]
+
+show1f :: Double -> String
+show1f = printf "%.1f"
+
+flags =
+  [ combine "-mlmean" ["min", "prod", "harm", "geom", "arit"]
+  , combine "-cert" (map show1f [0.7, 0.8 .. 1.0])
+  , combine "-certdamp" (map show [1 .. 4])
+  , combine "-defscore" (map show1f [0.6, 0.7 .. 0.9])
+  , combine "-naivereward" (map show1f [0.0, 0.1 .. 0.5])
+  , combine "-exploration" (map show1f [0.7, 0.8 .. 1.0])
+  , combine "-maxiters" (map show [20 .. 40])
+  , combine "-simdepth" (map show [20 .. 30])
+  ]
+
+initial = []
+
+main = optimise eval initial flags >>= putStrLn . unwords
+~~~
+
+The file `run.sh` generates for a given parameter combination
+an adequate Makefile and runs it.
+This allows us to resume the parameter evaluation at a later point.
+
+~~~ bash
+#!/bin/bash
+set -e
+
+ARGS="$*"
+CARGS=`echo $ARGS | sed 's/ /,/g'`
+FILE=montecop-170209$CARGS
+TARGET=out/bushy/10s/defcnf/optimise/$FILE
+
+(>&2 echo Current configuration: $ARGS)
+
+echo -e "
+include cop.mk datasets.mk
+$TARGET: \$(BUSHY:bushy/%=\
+$TARGET/%)
+$TARGET/%: cop-170209/montecop.native bushy/%
+	@mkdir -p \`dirname \$@\`
+	-/usr/bin/time -o \$@.time timeout 10 $^ \\
+          -ldata out/bushy/60s/defcnf/lazycop-170209-md10.ldata \\
+	  -exppol cutcla \\
+          $ARGS > \$@
+" > $FILE.mk
+
+make -j40 -f $FILE.mk $TARGET > $FILE.log 2>&1
+
+SOLVED=`(cd $TARGET && grep -l Theorem *) | wc -l`
+(>&2 echo Solved: $SOLVED)
+echo $SOLVED
+~~~
+
+
 17.02.2017
 ==========
 
