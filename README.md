@@ -1,3 +1,35 @@
+21.02.2017
+==========
+
+
+HOL Light with checkpointing
+----------------------------
+
+I installed HOL Light:
+
+    sudo apt install ocaml camlp5 dmtcp rlwrap
+    git clone https://github.com/jrh13/hol-light/
+    cd hol-light
+    make
+    dmtcp_checkpoint rlwrap ocaml
+
+Then, in the OCaml session, I run:
+
+    #use "hol.ml";;
+
+As soon as HOL is built, I run
+
+    dmtcp_command --checkpoint
+
+from a different console.
+After that, I can quit OCaml and resume its operation by running
+
+    ./dmtcp_restart_script.sh
+
+For now, OCaml always crashes when one quits it from checkpointed mode.
+
+
+
 20.02.2017
 ==========
 
