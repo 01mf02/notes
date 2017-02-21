@@ -29,6 +29,15 @@ After that, I can quit OCaml and resume its operation by running
 For now, OCaml always crashes when one quits it from checkpointed mode.
 
 
+Making new repository from subdirectory
+---------------------------------------
+
+Here is an answer if you want to create a new repository
+from parts of an existing one, preserving history:
+
+<http://stackoverflow.com/questions/359424/detach-move-subdirectory-into-separate-git-repository/17864475#17864475>
+
+
 
 20.02.2017
 ==========
