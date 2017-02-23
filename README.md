@@ -2,6 +2,25 @@
 ==========
 
 
+Statistics for problems that all monteCoPs solved
+-------------------------------------------------
+
+Similarly to the entry from 16.2., this generates statistics,
+but not for the average for all problems solved by a particular configuration,
+but for the average for all problems solved by *all* configurations,
+hereby represented by the file `intersection`.
+Without further ado:
+
+    for config in -randrew -sizerew -mlrew -bayesprob -constprob -cutcla -nocut ""; do
+      echo -en "${config}\t";
+      grep UCT `sed "s|^|out/bushy/10s/defcnf/montecop-170209${config}/|" intersection` |
+        grep -v nan | sed 's|/| |g' |
+        sed 's/.*UCTIters: \(\S*\) .* UCTSimSteps: \(\S*\) UCTDiscr: /\1 \2 /' |
+        awk '{for (i=1;i<=NF;i++){a[i]+=$i;}} END {for (i=1;i<=NF;i++){printf "%.2f", a[i]/NR; printf "\t"}; print NR}';
+    done
+
+
+
 Intersection of file lines
 --------------------------
 
