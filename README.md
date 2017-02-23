@@ -1,3 +1,26 @@
+23.02.2017
+==========
+
+
+Intersection of file lines
+--------------------------
+
+To get the lines of a set of files that are contained in all files,
+<http://stackoverflow.com/a/40223101/4112904> has a good answer:
+
+~~~ bash
+intersect() {
+    sort "$@" | uniq -cd | grep "^[^0-9]*$# "
+}
+
+# usage example
+intersect file1 file2 file3
+~~~
+
+Here, `$#` denotes the number of arguments, i.e. the number of files.
+
+
+
 21.02.2017
 ==========
 
