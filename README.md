@@ -1,3 +1,38 @@
+08.03.2017
+==========
+
+
+nanoCoP extension clause reconstruction
+---------------------------------------
+
+I have now worked for a bit more than one week non-stop on
+nanoCoP proof reconstruction in HOL Light.
+
+The biggest remaining problem is the reconstruction of extension steps:
+An extension step can be characterised by a path in the matrix to a matrix
+from which there is a path to a literal.
+Only for the second path, new subgoals are considered for the extension step.
+By default, this information is not explicitly collected, and reconstructing
+it from the existing proof structure may be quite intricate.
+I considered just creating the whole instantiated matrix
+at the beginning of the proof reconstruction,
+but I quickly discarded that plan, because the whole matrix is not explicitly
+given at the end of the proof search -- it also would need to be reconstructed
+after proof search from the proof steps.
+It might be important to note at this point that matrix copies are always
+*local* to the proof search -- that is, two matrix copies with the
+same copy index may appear during proof search,
+but denote different instantiations!
+
+It has helped tremendously to reconstruct two nanoCoP proofs by hand
+in HOL Light. This has given me confidence that it is actually not necessary
+to store gamma clauses during extension clause generation, because the
+gamma clauses are only used for more extension steps, and as extension clauses
+can be produced multiple times without littering the proof with additional
+dependencies, it does not compromise our ability to reconstruct the proof.
+
+
+
 23.02.2017
 ==========
 
