@@ -1,3 +1,69 @@
+14.03.2017
+==========
+
+
+HOL Light evaluation
+--------------------
+
+
+Change to the HOL Light directory.
+With original `fusion.ml`:
+
+~~~ ocaml
+#use "hol.ml";;
+#load "unix.cma";;
+#load "str.cma";;
+let (hreal_tybij_fst, hreal_tybij_snd) = hreal_tybij;;
+let (real_tybij_fst, real_tybij_snd) = real_tybij;;
+let (num_tydef_fst, num_tydef_snd) = num_tydef;;
+let (recspace_tydef_fst, recspace_tydef_snd) = recspace_tydef;;
+needs "update_database.ml";;
+update_database ();;
+loads "../HH/hh_symbols.ml";;
+write_hashes ();;
+~~~
+
+Then, with `fusion.ml` pointed to `fusion.ml.deps`:
+
+    ln ../HH/fusion.ml.deps fusion.ml
+
+~~~ ocaml
+#use "hol.ml";;
+#load "unix.cma";;
+#load "str.cma";;
+let (hreal_tybij_fst, hreal_tybij_snd) = hreal_tybij;;
+let (real_tybij_fst, real_tybij_snd) = real_tybij;;
+let (num_tydef_fst, num_tydef_snd) = num_tydef;;
+let (recspace_tydef_fst, recspace_tydef_snd) = recspace_tydef;;
+needs "update_database.ml";;
+update_database ();;
+loads "../HH/hh_symbols.ml";;
+~~~
+
+To write ATP files, first create a file containing
+all conjectures with at least one premise:
+
+    grep -v "[-\!]$" HH/deps.human > HH/towrite
+
+Then run with original `fusion.ml`:
+
+~~~ ocaml
+loads "../../HH/hh_tac.ml";;
+loads "../../HH/hh_write.ml";;
+loads "../../HH/hh_svr.ml";;
+loads "../../HH/hh_batch.ml";;
+write_to_prove_all "HH/towrite" 1000;;
+~~~
+
+This writes lots of files of the shape `f*.p` to the current directory.
+To move them:
+
+    mv f*[.]p HH/atpd/i/f
+
+TODO: How to obtain minimised ATP dependencies?
+
+
+
 08.03.2017
 ==========
 
