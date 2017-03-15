@@ -18,7 +18,8 @@ According to him, for his JAR paper, he created ATP dependencies as follows:
    are at 20%.
 3. On the dependencies of ATP1 u ATP2, train classifiers
    and use output for ATPs, yielding ATP3 that solves about 30%.
-   Step 3 can also be iterated several times with different kinds of features.
+   Step 3 can also be iterated several times with different kinds of features,
+   which brings the number of solved problems up to 40%.
 
 This process is time-intensive.
 
