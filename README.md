@@ -1,3 +1,48 @@
+15.03.2017
+==========
+
+
+ATP dependencies for HOL Light
+------------------------------
+
+I discussed ATP dependencies with Cezary.
+According to him, for his JAR paper, he created ATP dependencies as follows:
+
+1. Extract human dependencies for HOL Light theorems,
+   and pass them to some ATPs (E, Vampire, Z3),
+   yielding a set ATP1 of ATP dependencies. (About 15% solved problems.)
+2. On the human dependencies, train classifiers (k-NN, Naive Bayes)
+   and run the ATPs on the first n (64, 256, 1024) dependencies
+   reported by the classifiers, yielding ATP2.
+   This again solves about 15% of the problems, and ATP1 u ATP2
+   are at 20%.
+3. On the dependencies of ATP1 u ATP2, train classifiers
+   and use output for ATPs, yielding ATP3 that solves about 30%.
+   Step 3 can also be iterated several times with different kinds of features.
+
+This process is time-intensive.
+
+If you already have the ATP dependencies for some dataset, then
+it is possible to reuse large parts of it for newer versions of the dataset.
+One loses a few percent of the previous problems and
+does not take into account newly added problems that way,
+but it is significantly easier than creating ATP dependencies from scratch.
+To counter losing the few percent of the previous problems,
+Cezary used boosting, where he trained classifiers only on those problems
+that were not solvable anymore.
+
+Another option is to evaluate only on the human dependencies.
+To compare the performances of different reconstruction methods,
+this might be a suitable and easy way to go.
+Later, we might still evaluate performance on ATP dependencies.
+
+Yet another evaluation involves replacing calls to MESON
+by calls to a tactic that first tries nanoCoP,
+and only in case of failure resorts to MESON.
+In the end, one counts the number of problems that nanoCoP can solve.
+
+
+
 14.03.2017
 ==========
 
