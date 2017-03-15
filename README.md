@@ -2,6 +2,34 @@
 ==========
 
 
+Problems with `camlp5`
+----------------------
+
+On the server, the versions of OCaml and `camlp5` were conflicting,
+because I did install my own version of OCaml, but not of `camlp5`.
+Consequently, I needed to install the right version of `camlp5`.
+
+    opam install camlp5
+
+gave me `camlp5` 6.17, which however turned out to produce build errors
+for HOL Light.
+After some research, I found the solution:
+
+    opam pin add camlp5 6.14
+
+After that, HOL Light happily built. On the other hand, loading it
+with `#use "hol.ml";;` gives the error about not finding `camlp5o.cma`.
+
+I decided to reinstall everything with OPAM.
+
+    opam init --comp 4.02.3
+    opam pin add camlp5 6.14
+    opam pin add batteries 2.4.0
+
+But even that did not fix the issue yet ...
+
+
+
 ATP dependencies for HOL Light
 ------------------------------
 
