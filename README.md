@@ -1,3 +1,18 @@
+16.03.2017
+==========
+
+
+À la recherche du `camlp5` perdu
+--------------------------------
+
+Proust would be happy: You can find `camlp5` via:
+
+    ocaml -I `camlp5 -where` camlp5o.cma
+
+Courtesy of: https://github.com/jrh13/hol-light/issues/29
+
+
+
 15.03.2017
 ==========
 
