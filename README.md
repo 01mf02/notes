@@ -1,3 +1,31 @@
+23.03.2017
+==========
+
+
+nanoCoP optimisations
+---------------------
+
+I worked on following optimisations and measured their impact on
+the number of inferences for the problem yellow_6__t13_yellow_6.p
+with a timeout of 30s:
+
+Optimisation               |     Inf | Depth |    DInf
+-------------------------- | ------: | ----: | ------:
+Start                      |  211574 |     4 |  176006
+Array substitution         | 1414505 |     5 |  671766
+Optimised groundness check | 1638797 |     5 |  896058
+Unit list                  | 1790859 |     5 | 1048120
+
+The last two optimisation took about 1.5h today and they
+alone improved the number of inferences by 26.6%!
+
+I detected bottlenecks using `gprof`:
+
+    timeout 30 ./nanocop.p.native eval/bushy/yellow_6__t13_yellow_6.p
+    gprof ./nanocop.p.native | gvim -
+
+
+
 16.03.2017
 ==========
 
