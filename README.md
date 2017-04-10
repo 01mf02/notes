@@ -1,3 +1,51 @@
+10.04.2017
+==========
+
+Checkpointing OCaml with Docker
+-------------------------------
+
+To have more robust checkpointing with HOL Light, I played with Docker.
+To install it, add the repository as shown by
+<https://store.docker.com/editions/community/docker-ce-server-ubuntu>.
+Then install Docker and the checkpointing framework CRIU with:
+
+    sudo apt install docker-ce criu
+
+To enable CRIU support for Docker, add to `/etc/docker/daemon.json`:
+
+    {
+        "experimental": true
+    }
+
+Then, create a `Dockerfile` with the following contents:
+
+    FROM ocaml/opam:alpine_ocaml-4.02.3
+    RUN opam depext -i camlp5
+    CMD ocaml
+
+In the directory of the `Dockerfile`, run:
+
+    docker build -t docker-whale .
+    docker run -i --name ocaml docker-whale
+
+This should build an image with an open OCaml toplevel.
+You could now do something like `#use "hol.ml";;` and then run
+
+    docker checkpoint create ocaml test
+
+to checkpoint the current state.
+To resume the checkpoint later, run:
+
+    docker start -i --checkpoint test ocaml
+
+More information: <https://docs.docker.com/engine/getstarted/step_four/>.
+
+Running OCaml with CRIU alone worked for me only when giving CRIU root access,
+unfortunately. Work seems to be underway: <https://criu.org/User-mode>.
+More easy to install, LXC might be an alternative to Docker.
+
+
+
 15.03.2017
 ==========
 
