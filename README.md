@@ -796,12 +796,12 @@ Similarly to the experiments with varying simulation depth,
 I varied the maximal number of MCTS iterations per lazyCoP inference
 from 8, 16, 32, 64.
 
-Iterations | Solved
-----------:|------:
-         8 |    338
-        16 |    342
-        32 |    327
-        64 |    314
+Iterations  |  Solved
+----------: | ------:
+         8  |     338
+        16  |     342
+        32  |     327
+        64  |     314
 
 I expected that hybrid monteCoP would prove more problems than stand-alone
 monteCoP, but that it would prove less unique problems.
