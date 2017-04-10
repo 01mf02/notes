@@ -1,6 +1,53 @@
 10.04.2017
 ==========
 
+
+Total number of inferences for monteCoP
+---------------------------------------
+
+I calculated the total number of inferences for problems for monteCoP.
+As the log files of monteCoP contain the required information on several lines,
+it is not trivial to obtain the required fields with `sed`.
+However, with the help of Mr. Prokoš, I was able to come up with
+a Perl solution:
+
+    for i in `cat problems`; do
+      perl -0777 -ne 'm/UCTInf: ([0-9]+).*Inf: ([0-9]+)/s; print (($1+$2) . "\n")' $i;
+    done | awk '{s += $1} END {print s/NR}'
+
+An explanation of the Perl parameters:
+
+* The parameter `-0777` slurps in whole files at once,
+  which makes matching across multiple lines possible.
+* The switch `-n" does not print matches.
+* The starting character `m` of the regular expression stands for "matching".
+* The ending character `s` of the regular expression enables
+  matching of newlines like any other character via the dot.
+
+Reference: <http://perldoc.perl.org/perlrun.html>
+
+To obtain the intersection of problems, I created an improved version
+of the script from 23.02.2017 that does not display the total amount
+of files on every line:
+
+~~~ bash
+intersect() {
+    sort "$@" | uniq -cd | grep "^[^0-9]*$# " | sed 's/\s*[0-9]* //'
+}
+~~~
+
+This script was used to obtain the file `problems`.
+The results on the intersection of solved problems are:
+
+Prover   |  Avg. total inferences / problem
+-------- |  ------------------------------:
+monteCoP |                          20243.9
+lazyCoP  |                          21698.4
+
+This is promising ...
+
+
+
 Checkpointing OCaml with Docker
 -------------------------------
 
