@@ -1,3 +1,43 @@
+23.04.2017
+==========
+
+
+Backtracking evaluation
+-----------------------
+
+I compared the total number of inferences on the MPTP2078 bushy problems
+for different backtracking techniques.
+I used the cut strategy, no strategy scheduling and nondefinitional CNF.
+The results are as follows:
+
+Backtracking  | Solved | Inferences
+------------- | -----: | ---------:
+Stack         |    593 | 3426391895
+Continuations |    593 | 2975673811
+Streams       |    590 | 3010406638
+
+
+Proof certification evaluation
+------------------------------
+
+I evaluated several proof certification methods for HOL Light
+on a set of 2442 toplevel problems proved during the loading of HOL Light.
+Note that the results might be biased towards MESON and Metis,
+as these methods are already integrated into HOL Light.
+The number behind the proof method name indicates the used
+splitting limit.
+
+Prover       | Solved
+------------ | -----:
+leancop2-cut |   1151
+nanocop-cut  |    849
+meson0       |   1062
+meson8       |   1225
+metis0       |   1271
+metis8       |   1286
+
+
+
 10.04.2017
 ==========
 
