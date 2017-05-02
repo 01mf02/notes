@@ -1,3 +1,33 @@
+02.05.2017
+==========
+
+
+nanoCoP matrix ordering
+-----------------------
+
+While looking at the problem `mcart_1__t91_mcart_1.p` from MPTP2078,
+I noted that it can be proven by Prolog nanoCoP in <100ms,
+but the OCaml version does not seem to be able to show it in 30mins.
+So I looked at the order of the formulae in the matrix, which goes like this:
+
+1. Reflexivity: a = a
+2. Symmetry: a = b -> b = a
+3. Transitivity: a = b -> b = c -> a = c
+4. Predicate congruence: x1 = y1 -> ... -> xn = yn -> p(x1, ..., xn) -> p(y1, ..., yn)
+5. Function congruence: x1 = y1 -> ... -> xn = yn -> f(x1, ..., xn) = f(y1, ..., yn)
+6. Axioms
+7. Conjecture
+
+Parts 1--5 are only there if equality appears in the problem.
+Parts 4 and 5 are only there if there are predicates other than equality
+respectively functions in the problem.
+Parts 6 and 7 are only there if there are axioms respectively a conjecture
+in the problem.
+
+This can be seen also from `leancop_equal` in `nanocop_tptp2.pl`.
+
+
+
 23.04.2017
 ==========
 
