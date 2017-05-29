@@ -1,3 +1,52 @@
+29.05.2017
+==========
+
+
+nanoCoP matrix ordering, pt. 2
+------------------------------
+
+I found out that Prolog nanoCoP without reordering of the matrix
+performs significantly worse than with it.
+
+Strategy | With reordering | Without reordering
+-------- | --------------: | -----------------:
+Cut      |             303 |                348
+No cut   |             482 |                516
+
+The way that the reordering works is very skilfully executed;
+my attempts to only approximate it and obtain similar results failed.
+Therefore, I completely reimplemented the matrix generation
+in my OCaml version of nanoCoP. I will now describe the matrix generation.
+
+The input problem is transformed to a formula of the following shape:
+
+    ((((refl, sym, trans), pred), func), axioms) => conjecture
+
+Here, `refl`, `sym` and `trans` are the corresponding properties
+of the equality relation.
+`pred` and `func` are the equality congruence properties for
+predicate and function symbols in the input problem.
+`axioms` are the actual premises of the input problem, and
+`conjecture` is its goal.
+
+The path reordering will then look at every conjunction / disjunction
+and decide whether to swap their arguments, based on the
+number of potential paths through their arguments.
+A conjunction `a /\ (b /\ c)` can only put the `a` either
+in front of both `b` and `c` or after both `b` and `c` --
+however, `a` can never be put *between* `b` and `c`.
+In this context, an important implementation detail is that
+all binary operators associate to the *right*.
+This is important as it makes a huge difference to associate
+`a /\ b /\ c` as `(a /\ b) /\ c`, because this makes
+reordering `a` between `b` and `c` possible.
+
+This transformation leads to the path ordering to usually
+first put the conjecture, then the axioms, and
+finally the statements about equality into the database.
+
+
+
 02.05.2017
 ==========
 
