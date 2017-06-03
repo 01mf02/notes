@@ -1,3 +1,32 @@
+03.06.2017
+==========
+
+
+Finding smallest problems with differing number of inferences
+-------------------------------------------------------------
+
+In order to increase the compatibility between
+the Prolog and OCaml versions of nanoCoP, I now record the number of inferences
+for both versions and obtain those problems where the inferences differ:
+
+~~~ bash
+for i in `comm -12 \
+  solved/bushy/10s/plnanocop-170603-nocut-infs \
+  solved/bushy/10s/nanocop-170603-nocut-noms-noco-noir`
+do
+  echo `wc -l bushy/$i` \
+    `grep Inf out/bushy/10s/plnanocop-170603-nocut-infs/$i` \
+    `grep Inf out/bushy/10s/nanocop-170603-nocut-noms-noco-noir/$i`
+done | awk '{if ($4 != $7) print $1 " " $2 " " $4 " " $7; else;}' | sort -n
+~~~
+
+This already brought me the interesting insight that
+content-based Skolemisation can change the number of inferences required,
+for example in the bushy MPTP2078 problem `tex_2__t75_tex_2.p`,
+because it can map otherwise different Skolem constants to identical ones.
+
+
+
 29.05.2017
 ==========
 
