@@ -11,12 +11,13 @@ for both versions and obtain those problems where the inferences differ:
 
 ~~~ bash
 for i in `comm -12 \
-  solved/bushy/10s/plnanocop-170603-nocut-infs \
-  solved/bushy/10s/nanocop-170604-rl-nocut-noms-noco-noir-os`
+  solved/tptp370/10s/plnanocop-170603-nocut-infs \
+  solved/tptp370/10s/nanocop-170605-nocut-compat`
 do
-  echo `wc -l bushy/$i` \
-    `grep Inf out/bushy/10s/plnanocop-170603-nocut-infs/$i` \
-    `grep Inf out/bushy/10s/nanocop-170604-rl-nocut-noms-noco-noir-os/$i`
+  i=`cd tptp370 && find -name $i`
+  echo `wc -l tptp370/$i` \
+    `grep "Inf:" out/tptp370/10s/plnanocop-170603-nocut-infs/$i` \
+    `grep "Inf:" out/tptp370/10s/nanocop-170605-nocut-compat/$i`
 done | awk '{if ($4 != $7) print $1 " " $2 " " $4 " " $7; else;}' | sort -n
 ~~~
 
