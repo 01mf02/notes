@@ -59,6 +59,11 @@ predicate and function symbols in the input problem.
 `axioms` are the actual premises of the input problem, and
 `conjecture` is its goal.
 
+`pred` and `func` are of the following shape:
+
+    (x1 = y1, ..., xn = yn)  , P(x1, ..., xn) => P(y1, ..., yn)
+    (x1 = y1, ..., xn = yn) => f(x1, ..., xn) =  f(y1, ..., yn)
+
 The path reordering will then look at every conjunction / disjunction
 and decide whether to swap their arguments, based on the
 number of potential paths through their arguments.
