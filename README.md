@@ -2,6 +2,19 @@
 ==========
 
 
+leanCoP
+-------
+
+In case that conjecture-directed proof search is not activated,
+for every positive clause the `#` symbol is added at the beginning
+(see `assert_clauses`).
+
+To compare the OCaml and Prolog versions:
+
+    SET='[nopaths,tracep,nodef,conj,infs]' prolog/leancop.sh problems/skolem.p
+    ./lazycop.native -outersk -nocut -nodefcnf -nopaths -nominiscope problems/skolem.p -verbose
+
+
 Compiling GCC
 -------------
 
