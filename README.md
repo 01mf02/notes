@@ -3604,7 +3604,7 @@ really works best.
 
 Results:
 
-                   |  Samples |      Cov |     Prec |      Rec |      AUC |     Rank
+Age                |  Samples |      Cov |     Prec |      Rec |      AUC |     Rank
 ------------------ | -------- | -------- | -------- | -------- | -------- | --------
 knnisabelle-age    |     1650 |    0.833 |    5.983 |   412.39 |   0.9491 |   104.23
 knnisabelle-agelin |     1650 |    0.832 |    5.977 |   418.12 |   0.9483 |   105.98
@@ -3712,7 +3712,7 @@ k = 100.
 
 Statistics:
 
-          |  Samples |      Cov |     Prec |      Rec |      AUC |     Rank
+Algorithm |  Samples |      Cov |     Prec |      Rec |      AUC |     Rank
 --------- | -------- | -------- | -------- | -------- | -------- | --------
 heapsort  |     1689 |    0.637 |   10.728 |   413.80 |   0.8947 |   181.00
 fastsort  |     1689 |    0.877 |   13.616 |   304.58 |   0.9376 |    60.41
@@ -3813,7 +3813,7 @@ Runtime results:
 
 Statistical results:
 
-             |  Samples |      Cov |     Prec |      Rec |      AUC |     Rank
+Distance     |  Samples |      Cov |     Prec |      Rec |      AUC |     Rank
 ------------ | -------- | -------- | -------- | -------- | -------- | --------
 mepocosmizar |     1689 |    0.673 |    9.387 |   476.16 |   0.8123 |   149.82
 mepojacmizar |     1689 |    0.657 |    9.111 |   530.70 |   0.7757 |   184.99
@@ -3852,10 +3852,10 @@ with identical statistics.
 However, they are both a lot slower than k-NN, which takes only
 1sec43msec and has better statistical values:
 
-           Samples      Cov     Prec      Rec      AUC     Rank
---------- -------- -------- -------- -------- -------- --------
-mepomizar     1689    0.673    9.387   476.16   0.8123   149.82
-knnmizar      1689    0.874   13.619   249.75   0.9202    54.41
+Version   |  Samples |      Cov |     Prec |      Rec |      AUC |     Rank
+--------- | -------- | -------- | -------- | -------- | -------- | --------
+mepomizar |     1689 |    0.673 |    9.387 |   476.16 |   0.8123 |   149.82
+knnmizar  |     1689 |    0.874 |   13.619 |   249.75 |   0.9202 |    54.41
 
 
 SInE
