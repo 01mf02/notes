@@ -1,3 +1,65 @@
+09.06.2017
+==========
+
+
+Compiling GCC
+-------------
+
+Long story short: I wasted a lot of time trying to install GCC on the server
+because the GCC installed there does not support C++11.
+In the end, I got it installed, but I got linker errors respectively
+runtime errors about missing libraries, so in the end,
+I had to painfully uninstall GCC manually.
+
+For the adventurous (or, more precisely, the masochistically inclined),
+here are the steps that I took, aided by Mr. Prokosch:
+
+Prerequisites:
+
+Set PREFIX, e.g.:
+
+    export PREFIX=$HOME/.local
+
+Put
+
+    export LD_LIBRARY_PATH=$PREFIX:$LD_LIBRARY_PATH
+
+into `.bash_profile`.
+
+Now, you might need some extra packages:
+
+1. GMP: https://gmplib.org/#DOWNLOAD —
+   configure --prefix=$PREFIX, make install
+2. MPFR: http://www.mpfr.org/mpfr-current/#download —
+   configure --prefix=$PREFIX --with-gmp=$PREFIX, make install
+3. MPC: http://www.multiprecision.org/index.php?prog=mpc&page=download —
+   configure --prefix=$PREFIX --with-gmp=$PREFIX --with-mpfr=$PREFIX, make install
+
+Finally to itself:
+
+1. Download GCC at: https://gcc.gnu.org/mirrors.html
+2. ./configure --prefix=$PREFIX --with-mpfr=$PREFIX --with-gmp=$PREFIX --with-mpc=$PREFIX --disable-multilib
+3. make -j $NTHREADS bootstrap-lean
+4. make install
+
+Finally, a word of warning: If you happen to run `./configure` with wrong settings,
+do not just run it again. Delete the directory and start over.
+My failure to do so resulted in everything proceeding fine at first,
+but a different package picked up my wrong settings, much later.
+
+All this made me longing for a way to install packages locally
+in isolation, however, GNU Stow (as suggested by Mr. Prokosch)
+does not compile because of missing Perl modules,
+and Nix not only misses OpenSSL, but (more importantly)
+seems to be hardwired to use /nix to store programs in,
+so that seems to be no option.
+
+So how did I solve the original problem?
+I just compiled a static binary on my own computer and found to my surprise
+that it ran just fine on the server. :)
+
+
+
 03.06.2017
 ==========
 
@@ -3542,11 +3604,11 @@ really works best.
 
 Results:
 
-                    Samples      Cov     Prec      Rec      AUC     Rank
------------------- -------- -------- -------- -------- -------- --------
-knnisabelle-age        1650    0.833    5.983   412.39   0.9491   104.23
-knnisabelle-agelin     1650    0.832    5.977   418.12   0.9483   105.98
-knnisabelle-noage      1650    0.831    5.954   622.09   0.9144   175.37
+                   |  Samples |      Cov |     Prec |      Rec |      AUC |     Rank
+------------------ | -------- | -------- | -------- | -------- | -------- | --------
+knnisabelle-age    |     1650 |    0.833 |    5.983 |   412.39 |   0.9491 |   104.23
+knnisabelle-agelin |     1650 |    0.832 |    5.977 |   418.12 |   0.9483 |   105.98
+knnisabelle-noage  |     1650 |    0.831 |    5.954 |   622.09 |   0.9144 |   175.37
 
 
 
@@ -3650,11 +3712,11 @@ k = 100.
 
 Statistics:
 
-           Samples      Cov     Prec      Rec      AUC     Rank
---------- -------- -------- -------- -------- -------- --------
-heapsort      1689    0.637   10.728   413.80   0.8947   181.00
-fastsort      1689    0.877   13.616   304.58   0.9376    60.41
-knnold100     1689    0.751   10.809   420.16   0.9173    86.71
+          |  Samples |      Cov |     Prec |      Rec |      AUC |     Rank
+--------- | -------- | -------- | -------- | -------- | -------- | --------
+heapsort  |     1689 |    0.637 |   10.728 |   413.80 |   0.8947 |   181.00
+fastsort  |     1689 |    0.877 |   13.616 |   304.58 |   0.9376 |    60.41
+knnold100 |     1689 |    0.751 |   10.809 |   420.16 |   0.9173 |    86.71
 
 
 Integrating premise selection into Satallax
@@ -3751,11 +3813,11 @@ Runtime results:
 
 Statistical results:
 
-              Samples      Cov     Prec      Rec      AUC     Rank
------------- -------- -------- -------- -------- -------- --------
-mepocosmizar     1689    0.673    9.387   476.16   0.8123   149.82
-mepojacmizar     1689    0.657    9.111   530.70   0.7757   184.99
-mepoeucmizar     1689    0.567    7.989   566.35   0.7468   198.00
+             |  Samples |      Cov |     Prec |      Rec |      AUC |     Rank
+------------ | -------- | -------- | -------- | -------- | -------- | --------
+mepocosmizar |     1689 |    0.673 |    9.387 |   476.16 |   0.8123 |   149.82
+mepojacmizar |     1689 |    0.657 |    9.111 |   530.70 |   0.7757 |   184.99
+mepoeucmizar |     1689 |    0.567 |    7.989 |   566.35 |   0.7468 |   198.00
 
 
 
