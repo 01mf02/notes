@@ -19,6 +19,8 @@ do
 done | awk '{if ($4 != $7) print $1 " " $2 " " $4 " " $7; else;}' | sort -n
 ~~~
 
+The next candidate for comparison is: `xboole_1__t56_xboole_1.p`.
+
 
 
 09.06.2017
