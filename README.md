@@ -1,3 +1,26 @@
+22.06.2017
+==========
+
+
+Comparing leanCoP inferences
+----------------------------
+
+Similarly to the note from 03.06.2017:
+
+~~~ bash
+for i in `comm -12 \
+  solved/bushy/10s/nodefcnf/plleancop-170622-nocut-conj-nopaths-infs \
+  solved/bushy/10s/nodefcnf/lazycop-170622-nocut-conj-nopaths-compat`
+do
+  i=`cd bushy && find -name $i`
+  echo `wc -l bushy/$i` \
+    `grep "Inf:" out/bushy/10s/nodefcnf/plleancop-170622-nocut-conj-nopaths-infs/$i` \
+    `grep "Inf:" out/bushy/10s/nodefcnf/lazycop-170622-nocut-conj-nopaths-compat/$i`
+done | awk '{if ($4 != $7) print $1 " " $2 " " $4 " " $7; else;}' | sort -n
+~~~
+
+
+
 09.06.2017
 ==========
 
