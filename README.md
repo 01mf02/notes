@@ -1,3 +1,48 @@
+14.08.2017
+==========
+
+
+Coming back after a long voyage
+-------------------------------
+
+Trying to get back into debugging leanCoP after having not worked for
+about six weeks proves to be frustrating, when you find a note that says:
+
+> TODO: Fix zfmisc-1-t99 (diverges in plit = 20)
+
+But you cannot for your life figure out what program parameters you used.
+I worked a bit on the code and created a new evaluation
+`out/bushy/10s/nodefcnf/lazycop-170814-nocut-conj-nopaths-compat`.
+
+To look for diverging problems, I used:
+
+~~~ bash
+for i in `comm -12 \
+  solved/bushy/10s/nodefcnf/plleancop-170622-nocut-conj-nopaths-infs \
+  solved/bushy/10s/nodefcnf/lazycop-170814-nocut-conj-nopaths-compat`
+do
+  i=`cd bushy && find -name $i`
+  echo `wc -l bushy/$i` \
+    `grep "Inf:" out/bushy/10s/nodefcnf/plleancop-170622-nocut-conj-nopaths-infs/$i` \
+    `grep "Inf:" out/bushy/10s/nodefcnf/lazycop-170814-nocut-conj-nopaths-compat/$i`
+done | awk '{if ($4 != $7) print $1 " " $2 " " $4 " " $7; else;}' | sort -n
+~~~
+
+The results are promising; all problems proved by both provers have
+the same number of inferences.
+Still, three problems are only solved by the Prolog version and
+ten only by the OCaml version.
+Among these ten only solved by the OCaml version, the aforementioned
+`zfmisc-1-t99`. Aha -- the plot thickens!
+Luckily, also the Prolog version finds a proof for the problem,
+it is just a bit slower than the OCaml version.
+The number of inferences, however, is the same: 571475.
+After checking all the other problems only solved by one prover,
+all are actually solvable by both provers with a slightly higher timeout,
+and they all need the same number of inferences. :)
+
+
+
 22.06.2017
 ==========
 
