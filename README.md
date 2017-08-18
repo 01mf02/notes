@@ -1,3 +1,33 @@
+18.08.2017
+==========
+
+
+CoPliance
+---------
+
+I finished comparing the number of inferences per solved problem
+for Prolog and OCaml versions of leanCoP/nanoCoP on the MPTP2078 bushy problems,
+to conclude that they perform exactly the same number of inferences
+on all problems solved by both provers.
+The total number of solved problems for different configurations is shown below.
+
+Configuration                   | Prolog | OCaml
+------------------------------- | -----: | ----:
+nano nocut                      |    508 |   509
+nano   cut                      |    477 |   485
+lean   def,  cut,  conj         |    590 |   603
+lean nodef,  cut,  conj         |    605 |   625
+lean nodef,nocut,  conj         |    453 |   468
+lean nodef,nocut,  conj,nopaths |    382 |   389
+lean nodef,nocut,noconj         |    460 |   459
+
+An interesting observation is that
+the best nanoCoP configuration performs worse than the best leanCoP one.
+Furthermore, while cut seems crucial for leanCoP performance,
+it has a negative effect in the case of nanoCoP.
+
+
+
 17.08.2017
 ==========
 
