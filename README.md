@@ -1,3 +1,81 @@
+17.08.2017
+==========
+
+
+Yellow, yellow, dirty fellow
+----------------------------
+
+My experiments with `yellow_0__t30_yellow_0.p` and `yellow_0__t31_yellow_0.p`
+showed that the following problem could reproduce the divergence:
+
+    fof(c, conjecture, ( ( ( ( (c0 &  ( (c01 =>  c02 ) ) ) )  &  ( (c1 &  (c21 =>  c22 ) ) => final ) ) ) ) ) .
+
+In the end, I could trace down the problem to the clausification algorithm,
+where I had tried to be clever and make a more understandable version.
+After restoring the original version of clausification,
+the divergences disappeared. :)
+
+My analysis is that my overzealous simplification caused me to introduce
+differing behaviour that took me at least an hour to spot and to track down.
+I could have spotted this problem much more easily, if I had had
+a tool like QuickCheck to compare the existing and my new implementation.
+Therefore, I invested some time in trying [qtest] together with [qcheck],
+courtesy of Simon Cruanes, who I just met at CADE last week.
+
+While it is initially a real pain to set up generation of arbitrary instances,
+the testing then seems to work fine.
+
+[qtest]: https://github.com/vincent-hugot/iTeML
+[qcheck]: https://github.com/c-cube/qcheck
+
+
+
+16.08.2017
+==========
+
+
+On a good `Path`
+----------------
+
+Now onwards to getting leanCoP's ordering by paths right:
+Evaluating all bushy problems with path ordering gave
+many divergences between the OCaml and Prolog versions;
+the smallest diverging problem was `enumset1__t102_enumset1.p`.
+I analysed this problem and noted that I could reduce it to a simpler one:
+
+    fof(c, conjecture, b).
+    fof(dt_k1_enumset1, axiom, (d => d)).
+    fof(a1, axiom, b).
+    fof(a2, axiom, c).
+
+In this problem, leanCoP would swap the order of `b` and `c`
+in case the axiom `d => d` is present.
+The problem was the renaming of variables, for which the whole formula
+was first split into conjuncts, then variables were renamed individually,
+finally the formula was put into a conjunct again:
+
+    strip_conj [] %> List.map (rename_form false) %> conj_of_forms
+
+This process changed the formula structure; for example,
+a formula like `a & (b & c)` might have been transformed into
+`(a & b) & c`, and the path reordering might have yielded different results.
+
+The solution was to use `rename_form true` on the whole formula,
+which previously might not have been possible because `rename_form`
+did not properly minimise variables for machine learning purposes.
+I actually also still need to test whether this change does not break ML.
+
+In any case, all tests with path ordering now yield
+the same number of inferences for both OCaml and Prolog versions. :)
+
+The same also holds for non-conjecture-directed search.
+
+When introducing `cut`, two problems diverge, namely
+`yellow_0__t30_yellow_0.p` and `yellow_0__t31_yellow_0.p`.
+Investigation is to come.
+
+
+
 14.08.2017
 ==========
 
@@ -25,6 +103,7 @@ do
   echo `wc -l bushy/$i` \
     `grep "Inf:" out/bushy/10s/nodefcnf/plleancop-170622-nocut-conj-nopaths-infs/$i` \
     `grep "Inf:" out/bushy/10s/nodefcnf/lazycop-170814-nocut-conj-nopaths-compat/$i`
+
 done | awk '{if ($4 != $7) print $1 " " $2 " " $4 " " $7; else;}' | sort -n
 ~~~
 
