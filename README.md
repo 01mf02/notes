@@ -1,3 +1,53 @@
+25.08.2017
+==========
+
+
+nanoCoP reconstruction pyramid
+------------------------------
+
+This week, I dedicated my time to the reconstruction of nanoCoP proofs
+in HOL Light.
+First, I synchronised several code parts from the main nanoCoP
+to HOL-nanoCoP, because I had fixed several bugs in main nanoCoP
+since I did the port to HOL Light.
+
+The biggest resulting problem was the change of extension clause generation,
+which caused reconstruction to consistently fail.
+I tried to adapt the reconstruction, but I failed to understand the
+refutation of extension clauses that I had written several months ago.
+For that reason, I reprogrammed this section completely,
+which resulted in considerably shorter and (hopefully) more readable code.
+(Perhaps now I can claim like Yutaka that my work contains "no code clutter".)
+
+In the end, however, I was not able to fix reconstruction for the
+"new" extension clause generation -- the problem persisted,
+and I am led to believe that actually the "older" way of doing things
+was better -- even if the original Prolog nanoCoP does it also the "new" way.
+For that reason, I have accepted for now to use the "old" way
+in HOL-nanoCoP.
+
+My evaluation showed that the new version of nanoCoP in HOL Light
+(single strategy with cut) is able to prove 1033 problems,
+compared to only 866 problems before the synchronisation.
+We are now slowly approaching the performance of Metis,
+which proves about 1286 problems (with splitting limit 8).
+
+In any case, there is still some work to be done on reconstruction,
+because about 10 problems fail to be reconstructed by nanoCoP.
+Looking at my old evaluation from 20th of April,
+only three problems could not be reconstructed there,
+and all of these three problems are among the 10 problems.
+All these problems are related to instantiation of (universal) quantifiers,
+more precisely the conversion of first-order terms to higher-order terms
+when fresh variables occur.
+This problem is already present in the second version of HOL-leanCoP
+(where it might be responsible for up to 12 failed reconstructions!),
+so fixing this will probably also have a positive impact on leanCoP.
+I'm checking whether the problem is also present in the
+first version of HOL-leanCoP.
+
+
+
 18.08.2017
 ==========
 
