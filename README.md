@@ -1,3 +1,30 @@
+29.08.2017
+==========
+
+nanoCoP extension clause order
+------------------------------
+
+During working on the reconstruction of nanoCoP proofs,
+I noted that the reconstruction of extension clauses
+would happen in a quite different order than the proof search.
+In nanoCoP, proof search happens first in the clause part that is
+closer to the literal of an extension, whereas the reconstruction
+works first on parts that are far away from the literal,
+approaches the literal, then departs from the literal again.
+It is a bit hard to describe.
+
+In any case, I made a quick experiment to see how the search would behave
+if the order of proof search would behave such that it was
+closest to the order of proof reconstruction.
+The results by far exceeded my expectations:
+
+Dataset          | Before | After |  Change
+---------------- | -----: | ----: | ------:
+MPTP2078 (Bushy) |    491 |   529 |   +7.7%
+TPTP 3.7.0 (FOF) |   1235 |  1281 |   +3.7%
+
+
+
 25.08.2017
 ==========
 
