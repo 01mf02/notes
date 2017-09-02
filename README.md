@@ -1,5 +1,39 @@
+02.08.2017
+==========
+
+
+Empty decomposition clause
+--------------------------
+
+Here is a first-order problem where the original Prolog nanoCoP
+creates an extension clause with an empty clause:
+
+~~~
+fof(1, negated_conjecture, (~p)).
+fof(2, axiom,  ((~r | (p &  ~ q ) ) ) ).
+~~~
+
+
+Old test examples for Tseitin transformation
+--------------------------------------------
+
+Example 1:
+
+~~~
+fof(1, conjecture, ((a & (b | c)) | (d & (e | f)))).
+~~~
+
+Example 2:
+
+~~~
+fof(1, conjecture, ((a & (b | (c & (d | e)))))).
+~~~
+
+
+
 29.08.2017
 ==========
+
 
 nanoCoP extension clause order
 ------------------------------
