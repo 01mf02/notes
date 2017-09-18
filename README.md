@@ -1,3 +1,41 @@
+05.08.2017
+==========
+
+
+Formalising k-NN properties
+---------------------------
+
+Some interesting properties of k-NN that could be formalised
+are stated in the book "A probabilistic theory of pattern recognition" by
+Luc Devroye, László Györfi, Gábor Lugosi.
+
+
+Metis examples
+--------------
+
+Example where Metis currently fails (uses all logical rules):
+
+~~~ ocaml
+let dfdf = ASSUME `!B C D. (D < B - C) <=> (D < B /\ ~(D < C))`;;
+let eqdf = ASSUME `!B C. B = C <=> ( B < C /\ C < B)`;;
+let gl = `!B C. B + (C - B) = B + C`;;
+METIS [dfdf;eqdf] gl;;
+~~~
+
+Example where Metis succeeds (uses only axiom, resolve, subst):
+
+~~~ ocaml
+METIS [] `(!x. p x ==> p (f x)) ==> p 0 ==> p(f(f 0))`;;
+~~~
+
+
+Showing types in HOL Light
+--------------------------
+
+https://sourceforge.net/p/hol/mailman/message/35201767/
+
+
+
 02.08.2017
 ==========
 
