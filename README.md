@@ -1,3 +1,14 @@
+17.10.2017
+==========
+
+
+Introducing `hashek` in every assumption
+----------------------------------------
+
+e (RULE_ASSUM_TAC (fun th -> DISCH `hashek` th));;
+
+
+
 05.08.2017
 ==========
 
