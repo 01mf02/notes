@@ -1,3 +1,15 @@
+25.10.2017
+==========
+
+
+Creating sets of solved problems for all JAR ATPs
+-------------------------------------------------
+
+    find out/*/jar -maxdepth 1 -mindepth 1 -type d | sed 's/out/solved/' | \
+      xargs make -f analysis.mk
+
+
+
 17.10.2017
 ==========
 
@@ -5,7 +17,7 @@
 Introducing `hashek` in every assumption
 ----------------------------------------
 
-e (RULE_ASSUM_TAC (fun th -> DISCH `hashek` th));;
+    e (RULE_ASSUM_TAC (fun th -> DISCH `hashek` th));;
 
 
 
