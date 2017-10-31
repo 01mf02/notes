@@ -1,3 +1,34 @@
+31.10.2017
+==========
+
+
+OCaml references and `fork`
+---------------------------
+
+I woke up with the thought that
+if the content of references was shared when forking in OCaml,
+this would prevent the parallel evaluation of functions
+that should use references with different values.
+Luckily, I concluded that when forking in OCaml,
+the content of references is unique for every forked process,
+by a small demonstration program:
+
+~~~ ocaml
+#load "unix.cma";;
+
+let interval = ref 1;;
+
+let _ =
+  match Unix.fork () with
+    0 -> while true do Unix.sleep !interval; Format.printf "Sleep for %ds\n%!" !interval done
+  | n -> Unix.sleep 5; Format.printf "Setting interval to 5s\n%!";
+         interval := 5; Unix.sleep 100;;
+~~~
+
+This constantly prints "Sleep for 1s", even after "Setting interval to 5s".
+
+
+
 25.10.2017
 ==========
 
