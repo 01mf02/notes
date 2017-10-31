@@ -2,6 +2,14 @@
 ==========
 
 
+Weird MESON behaviour
+---------------------
+
+When evaluating MESON on exactly the problems that MESON can solve,
+it apparently can not solve all these problems.
+Is there a bug in the evaluation code?
+
+
 OCaml references and `fork`
 ---------------------------
 
