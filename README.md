@@ -9,6 +9,39 @@ When evaluating MESON on exactly the problems that MESON can solve,
 it apparently can not solve all these problems.
 Is there a bug in the evaluation code?
 
+After some debugging, the answer was a clear "yes":
+There were two problems:
+
+1. The tactics that were used to evaluate MESON goals were frequently run
+   when assumptions were an essential part of the problem;
+   however, the tactics stripped away the assumptions
+   (with `POP_ASSUM_LIST (K ALL_TAC)`). This led some problems to be unprovable.
+2. The tactic that should evaluate MESON called the original MESON,
+   which in turn called the evaluating tactics again, leading to a loop.
+   This efficiently crashed my computer multiple times.
+
+Now, all the problems are solved and the evaluating MESON tactic
+can solve practically all MESON goals as expected in 10s.
+Here are the statistics for the tactics evaluated on
+44468 Flyspeck MESON goals:
+
+Tactic           Solved
+-------------- --------
+leancop-cut       40146
+leancop-nocut     38707
+meson-sl0         39235
+meson-sl8         44411
+metis2-sl0        41774
+metis2-sl8        42225
+metis-sl0         42845
+nanocop-cut       34652
+nanocop-nocut     35131
+
+N.B.: Of the 44468 MESON goals in Flyspeck, only 39779 of them are
+exported to FOF, because the remaining ones are already solved
+during the preprocessing for exporting.
+
+
 
 OCaml references and `fork`
 ---------------------------
