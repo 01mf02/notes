@@ -25,17 +25,17 @@ can solve practically all MESON goals as expected in 10s.
 Here are the statistics for the tactics evaluated on
 44468 Flyspeck MESON goals:
 
-Tactic           Solved
--------------- --------
-leancop-cut       40146
-leancop-nocut     38707
-meson-sl0         39235
-meson-sl8         44411
-metis2-sl0        41774
-metis2-sl8        42225
-metis-sl0         42845
-nanocop-cut       34652
-nanocop-nocut     35131
+Tactic         |   Solved
+-------------- | -------:
+leancop-cut    |    40146
+leancop-nocut  |    38707
+meson-sl0      |    39235
+meson-sl8      |    44411
+metis2-sl0     |    41774
+metis2-sl8     |    42225
+metis-sl0      |    42845
+nanocop-cut    |    34652
+nanocop-nocut  |    35131
 
 N.B.: Of the 44468 MESON goals in Flyspeck, only 39779 of them are
 exported to FOF, because the remaining ones are already solved
