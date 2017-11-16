@@ -1,3 +1,31 @@
+16.11.2017
+==========
+
+
+Some `screen` shortcuts learnt
+------------------------------
+
+* `C-a :sessionname` changes the current screen session name
+* `C-a :logfile` changes the logfile name (does not open it yet)
+* `C-a "` displays a list of screen sessions to go to
+* `C-a H` saves a log file
+
+
+leanCoP / nanoCoP bugs
+----------------------
+
+I tripped on two unexpected behaviours in the Prolog versions of
+leanCoP / nanoCoP:
+
+1. Formulas with role `negated_conjecture` are being treated like
+   regular axioms, thus disabling conjecture-directed search.
+2. Problems containing symbols named `all` and `ex` immediately fail.
+
+I fixed both problems and wrote to Jens about it.
+He found a much shorter fix for problem 2, which even makes the code shorter. :)
+
+
+
 31.10.2017
 ==========
 
