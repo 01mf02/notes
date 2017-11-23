@@ -812,7 +812,7 @@ Proust would be happy: You can find `camlp5` via:
 
     ocaml -I `camlp5 -where` camlp5o.cma
 
-Courtesy of: https://github.com/jrh13/hol-light/issues/29
+Courtesy of: <https://github.com/jrh13/hol-light/issues/29>
 
 
 
@@ -8278,10 +8278,12 @@ Multi-threading
 Our programm parallelizes nicely when building trees; here are the numbers
 for building 32 trees with sample frequency 5 of isabelle-probability:
 
-* 1 thread : 33.96sec
-* 2 threads: 28.11sec
-* 3 threads: 20.61sec
-* 4 threads: 20.40sec
+Threads |  Time [sec]
+------: | ----------:
+      1 |       33.96
+      2 |       28.11
+      3 |       20.61
+      4 |       20.40
 
 
 25.10.2014
@@ -8302,10 +8304,12 @@ In both languages, the change is essentially a one-liner. With huge outcome.
 Testing data on 64 trees with sample frequency of 1 on first 100 evaluation
 points of isabelle-probability data set:
 
-Haskell (before): 2min19sec
-Haskell (after):  1min24sec
-C++ (before):         51sec
-C++ (after):          14sec (!!)
+Implementation   |      Time
+---------------- | --------:
+Haskell (before) | 2min19sec
+Haskell (after)  | 1min24sec
+C++ (before)     |     51sec
+C++ (after)      |     14sec
 
 That makes C++ the clear winner again. :/
 However, with this change, the profiling information for Haskell has diverged
@@ -8674,19 +8678,19 @@ suggestions without the dependencies were too weak and did not work correctly.
 I am now going to investigate whether lower trees might help with that problem.
 
 
-Optimizing n_of_samples_with_label
-----------------------------------
+Optimizing `n_of_samples_with_label`
+------------------------------------
 
 As profiling showed, about 80% of runtime is spent in the function
-n_of_samples_with_label, mostly to search through the dependencies of a theorem
+`n_of_samples_with_label`, mostly to search through the dependencies of a theorem
 to see if it contains a label. As the dependencies are usually stored as
-vector, I tried to replace it with set and unordered_set.
-The results, however, are a bit disappointing, as both set and unordered_set
+vector, I tried to replace it with `set` and `unordered_set`.
+The results, however, are a bit disappointing, as both `set` and `unordered_set`
 do not seem to substantially change runtime. That might be due to the fact that
 most theorems do not have a sufficiently large number of dependencies for which
 sets would have a big pay-off.
 
-Caveat: When you do profiling with gprof, recompiling the binary may change
+Caveat: When you do profiling with `gprof`, recompiling the binary may change
 your profiling output in retrospective without any warning!
 
 
