@@ -2,6 +2,31 @@
 ==========
 
 
+New CoP comparison
+------------------
+
+I compared the new stream implementation with the other implementations.
+As benchmark, I used the bushy MPTP2078 problems, 10s timeout,
+no definitional CNF, cut and conjecture-based search.
+To get the total number of inferences performed during the search,
+I used the following command.
+
+    for i in out/bushy/jar/*-nodef-cut-conj*; do echo $i;
+      sed -n 's/.*Inf: \([0-9]*\).*/\1/p' $i/*.p | awk '{sum += $1} END {print sum}';
+    done
+
+The results are below.
+Again, as noted in the report below, the Prolog inferences are not meaningful.
+
+Implementation |  Solved |  Inferences
+-------------- | ------: | ----------:
+Continuation   |     681 |  2200272406
+Stack          |     681 |  2490100879
+Stream         |     669 |  1718595700
+Lazy list      |     639 |   878199349
+Prolog         |     606 |           -
+
+
 Streams are the new lazy lists
 ------------------------------
 
