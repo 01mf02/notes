@@ -1,3 +1,61 @@
+25.11.2017
+==========
+
+
+Streams are the new lazy lists
+------------------------------
+
+So far, for my CoP implementations I used (semi-)lazy lists of the shape:
+
+~~~ ocaml
+type 'x t = unit -> 'x node_t
+and 'x node_t = Nil | Cons of ('x * 'x t)
+~~~
+
+However, when doing an evaluation of this approach,
+I got quite disappointing results.
+Looking for a remedy, I found <https://stackoverflow.com/a/1632629/7379374>,
+which suggested using a type such as the following:
+
+~~~ ocaml
+type 'a stream = unit -> 'a
+~~~
+
+The new type captures the fact that every element of the stream
+can be used only once; in that sense, it reminded me of quantum computation
+and its "no-copy" theorem.
+
+Not only is the type smaller; also some functions become ridiculously small:
+
+~~~ ocaml
+let map f l () = f (l ())
+~~~
+
+To benchmark the new implementation, I counted the number of inferences
+achieved in three seconds when run like:
+
+    ./streamcop.native -nodefcnf eval/bushy/tex_2__t32_tex_2.p
+    SET='[conj,nodef,cut,infs]' prolog/leancop.sh eval/bushy/tex_2__t32_tex_2.p
+
+Note that for Prolog, the inferences after three seconds are not available,
+as leanCoP currently does not print the inferences performed so far
+when it is killed.
+
+Furthermore, I counted the total time each implementation takes
+to solve the problem.
+I verified that all versions find a proof after exactly
+the same number of inferences: 2584856.
+
+Implementation | Inferences |  Time [s]
+-------------- | ---------: | --------:
+Continuation   |    2020823 |      3.79
+Stack          |    2015322 |      3.78
+Stream         |    1389830 |      5.57
+Lazy list      |    1177455 |      6.18
+Prolog         |          - |     48.34
+
+
+
 16.11.2017
 ==========
 
