@@ -1,3 +1,26 @@
+27.11.2017
+==========
+
+
+nanoCoP comparison
+------------------
+
+I also implemented nanoCoP with the new stream technique.
+Evaluation was done on bushy MPTP2078 problems with 10s timeout and cut.
+Even though "conjecture-based search" was performed in the
+OCaml version of nanoCoP, this did not change the number of
+solved problems, as the prover loop does essentially the same thing
+as without conjecture-based search, so this option is actually misleading.
+
+
+Implementation |  Solved |  Inferences
+-------------- | ------: | ----------:
+Streams        |     511 |   495368962
+Lazy list      |     504 |   374849495
+Prolog         |     480 |           -
+
+
+
 25.11.2017
 ==========
 
