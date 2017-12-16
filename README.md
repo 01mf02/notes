@@ -1,3 +1,68 @@
+16.12.2017
+==========
+
+
+Skolemisation woes
+------------------
+
+During my writing about consistent Skolemisation,
+I try to came up with some interesting example to demonstrate its strength.
+Feeding the following example to my prover,
+I actually obtained that my consistent Skolemisation was faulty:
+
+    fof(1, axiom, (![X]: (?[Y]: (p(X,Y) & (?[Z]: (p(Y,Z) & (?[X1]: p(Z,X1)))))))).
+
+The problem was that `Z` and `X1` were mapped to the same Skolem function:
+
+    'skolem(?[B]:(p(A,B)&?[C]:(p(B,C)&?[D]:p(C,D))),01)'(A)
+
+Here, the "largest" defining existential formula was
+the same for both `Z` and `X1`.
+However, the relative position of `Z` and `X1` was not calculated
+w.r.t. the largest defining existential formula,
+but only w.r.t. their next-largest existential superformula that
+binds a variable free below `Z` respectively `X1`.
+Therefore, the relative positions of the Skolem terms for `Z` and `X1`
+were wrongly calculated to be the same.
+To remedy this, I completely rewrote the Skolemisation,
+such that also the calculation of Skolem arguments and function name
+are better separated.
+
+
+Skolemisation and `ordinal1_t6`
+-----------------------------
+
+Following a hint from Cezary, I looked at the MPTP problem `ordinal1_t6`,
+containing the following conjecture:
+
+    ![C]:![G]:![F]:![E]:![D]:![B]:~((r2_hidden(C,G)&(r2_hidden(G,F)&
+    (r2_hidden(F,E)&(r2_hidden(E,D)&(r2_hidden(D,B)&r2_hidden(B,C)))))))
+
+I verified that the Skolemisation produces distinct symbols for all
+distinct variables:
+
+    [[r2_hidden('skolem(?[A]:?[B]:?[C]:?[D]:?[E]:?[F]:(r2_hidden(A,B)&(r2_hidden(B,C)&(r2_hidden(C,D)&(r2_hidden(D,E)&(r2_hidden(E,F)&r2_hidden(F,A)))))),)',
+                'skolem(?[A]:?[B]:?[C]:?[D]:?[E]:?[F]:(r2_hidden(A,B)&(r2_hidden(B,C)&(r2_hidden(C,D)&(r2_hidden(D,E)&(r2_hidden(E,F)&r2_hidden(F,A)))))),0)')
+     ] &
+     [r2_hidden('skolem(?[A]:?[B]:?[C]:?[D]:?[E]:?[F]:(r2_hidden(A,B)&(r2_hidden(B,C)&(r2_hidden(C,D)&(r2_hidden(D,E)&(r2_hidden(E,F)&r2_hidden(F,A)))))),0)',
+                'skolem(?[A]:?[B]:?[C]:?[D]:?[E]:?[F]:(r2_hidden(A,B)&(r2_hidden(B,C)&(r2_hidden(C,D)&(r2_hidden(D,E)&(r2_hidden(E,F)&r2_hidden(F,A)))))),00)')
+     ] &
+     [r2_hidden('skolem(?[A]:?[B]:?[C]:?[D]:?[E]:?[F]:(r2_hidden(A,B)&(r2_hidden(B,C)&(r2_hidden(C,D)&(r2_hidden(D,E)&(r2_hidden(E,F)&r2_hidden(F,A)))))),00)',
+                'skolem(?[A]:?[B]:?[C]:?[D]:?[E]:?[F]:(r2_hidden(A,B)&(r2_hidden(B,C)&(r2_hidden(C,D)&(r2_hidden(D,E)&(r2_hidden(E,F)&r2_hidden(F,A)))))),000)')
+     ] &
+     [r2_hidden('skolem(?[A]:?[B]:?[C]:?[D]:?[E]:?[F]:(r2_hidden(A,B)&(r2_hidden(B,C)&(r2_hidden(C,D)&(r2_hidden(D,E)&(r2_hidden(E,F)&r2_hidden(F,A)))))),000)',
+                'skolem(?[A]:?[B]:?[C]:?[D]:?[E]:?[F]:(r2_hidden(A,B)&(r2_hidden(B,C)&(r2_hidden(C,D)&(r2_hidden(D,E)&(r2_hidden(E,F)&r2_hidden(F,A)))))),0000)')
+     ] &
+     [r2_hidden('skolem(?[A]:?[B]:?[C]:?[D]:?[E]:?[F]:(r2_hidden(A,B)&(r2_hidden(B,C)&(r2_hidden(C,D)&(r2_hidden(D,E)&(r2_hidden(E,F)&r2_hidden(F,A)))))),0000)',
+                'skolem(?[A]:?[B]:?[C]:?[D]:?[E]:?[F]:(r2_hidden(A,B)&(r2_hidden(B,C)&(r2_hidden(C,D)&(r2_hidden(D,E)&(r2_hidden(E,F)&r2_hidden(F,A)))))),00000)')
+     ] &
+     [r2_hidden('skolem(?[A]:?[B]:?[C]:?[D]:?[E]:?[F]:(r2_hidden(A,B)&(r2_hidden(B,C)&(r2_hidden(C,D)&(r2_hidden(D,E)&(r2_hidden(E,F)&r2_hidden(F,A)))))),00000)',
+                'skolem(?[A]:?[B]:?[C]:?[D]:?[E]:?[F]:(r2_hidden(A,B)&(r2_hidden(B,C)&(r2_hidden(C,D)&(r2_hidden(D,E)&(r2_hidden(E,F)&r2_hidden(F,A)))))),)')
+     ]
+    ]
+
+
+
 27.11.2017
 ==========
 
