@@ -1,3 +1,18 @@
+20.01.2018
+==========
+
+
+PhD meeting résumé
+------------------
+
+The procedure is as follows:
+My supervisor asks potential reviewers.
+I should ask the coauthors of my papers which parts they have done.
+When I'm done writing my thesis, my co-supervisors will have
+one week to check my thesis before submission.
+
+
+
 16.12.2017
 ==========
 
