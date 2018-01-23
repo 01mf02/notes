@@ -1,3 +1,15 @@
+23.01.2018
+==========
+
+
+Getting solved files for all HOL Light tactics
+----------------------------------------------
+
+    find */HH/toplevel-eval/ -maxdepth 2 -mindepth 2 -type d | \
+      sed 's|HH|HH/solved|' | xargs make
+
+
+
 20.01.2018
 ==========
 
