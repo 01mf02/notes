@@ -1,3 +1,27 @@
+01.02.2018
+==========
+
+
+Verified FOL & Deskolemisation
+------------------------------
+
+Looking at <https://bitbucket.org/isafol/isafol/wiki/Home>,
+I found a formalisation of a first-order logic ATP based on
+John Harrison's "Handbook of Practical Logic and Automated Reasoning".
+It seems that the referenced ATP is given in section 6.6,
+subsection "Tableaux by inference".
+The functions are called `lcfptab` respectively `lcftaut`.
+The formalisation is quite interesting:
+I expected the prover to be implemented via Isabelle functions,
+whereas it is actually implemented in Isabelle/ML.
+It seems that its soundness is guaranteed because
+it can only produce values via a predefined set of axioms.
+Still, this approach does not seem to cover completeness.
+
+In section 6.8, Harrison then writes about "Eliminating Skolem functions",
+which would be a hot reference for doing proper proof reconstruction in ZF.
+
+
 23.01.2018
 ==========
 
