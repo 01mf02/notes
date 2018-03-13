@@ -1,3 +1,56 @@
+13.03.2018
+==========
+
+
+Array performance in bytecode and native executables
+----------------------------------------------------
+
+As the proof search performance of leanCoP/nanoCoP in HOL Light
+was rather disappointing, Cezary indicated that
+the slow array speed in OCaml bytecode might be the culprit.
+To this end, I created a little test program to test array access speed:
+
+~~~ ocaml
+let _ =
+  let a = Array.make 100000 0 in
+  let s = ref 0 in
+  for x = 0 to 100000 do
+    for i = 0 to 99999 do
+      s := a.(i)
+    done;
+  done;
+  Format.printf "done\n"
+~~~
+
+The results are shown below.
+These numbers show that the native arrays perform
+about 35 times (!) faster than the bytecode arrays, and
+disabling bounds checking doubles speed once again.
+
+Implementation  |  Time
+--------------- | ----:
+Bytecode        | 3m32s
+Native          |    6s
+Native (unsafe) |    3s
+
+Unsafe compilation was achieved by:
+
+    ocamlbuild -ocamlopt "ocamlopt -unsafe -inline 100" test.native
+
+
+
+07.02.2018
+==========
+
+
+Creating solved files for all HOL Light tactics
+-----------------------------------------------
+
+    find */HH/*-eval/* -maxdepth 1 -mindepth 1 -type d | \
+      awk '{print $1".solved"}' | xargs make
+
+
+
 01.02.2018
 ==========
 
