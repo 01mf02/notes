@@ -6511,11 +6511,11 @@ I measured the break-even point where k-NN and Eprover with a certain timeout
 would match the performance of RF with Eprover and timeout = 10sec.
 I always used 128 premises, and ran Eprover on 48 cores.
 
-Timeout        Time   Theorems
--------- ----------- ---------
-  15sec   7min07sec        969
-  13sec   6min20sec        964
-  10sec   5min15sec        938
+ Timeout|      Time| Theorems
+-------:|---------:|--------:
+  15sec | 7min07sec|      969
+  13sec | 6min20sec|      964
+  10sec | 5min15sec|      938
 
 Random Forests achieve 969 theorems with Eprover timeout = 10secs, taking 22min
 for the premise selection.
