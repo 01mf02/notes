@@ -6525,6 +6525,48 @@ So >50min of Eprover runtime can be compensated by just 22min of RF.
 
 
 
+1.4.2015
+========
+
+
+Premise selection
+-----------------
+
+Naive Bayes:
+
+* Zhang ('04) seems to be the mathematically most convincing source on NB.
+* Expectation maximation: Very interesting article. Skimming through, is TF-IDF instance of EM?
+* Pazzani & Domingos (1997) is cited frequently on optimality by Zhang and others.
+* Ng & Jordan (2002) compare logistic regression with NB. Look into logistic regression?
+* Zero-one loss.
+
+SVM (Support Vector Machine):
+
+* Try this? http://www.csie.ntu.edu.tw/~cjlin/libsvm/
+* There exist several methods to extend SVM to multi-class. One is to construct several binary classifiers. Another is given by Crammer & Singer (2001). Which one does libsvm use?
+
+Extensive French ML toolkit for Python with e.g. SVM, k-NN, RF: http://scikit-learn.org
+Interesting would be comparison with own RF.
+
+
+Proof guidance
+--------------
+
+* Metis: http://www.gilith.com/research/metis/
+* Bachmair & Ganzinger: Already suggested by Georg as excellent paper. Gives also idea of rewriting techniques in theorem proving.
+* CICM 2014: Gransden et al showed a method to generate tactics for proofs in Coq.
+* Urban: MaLeCoP!
+
+
+Theory exploration
+------------------
+
+* Johansson: HipSpec is a very interesting project to synthesise conjectures. The version presented at CICM'14 did handle only equational theorems, but judging from the GitHub repository https://github.com/moajohansson/IsaHipster implications are underway.
+
+Interesting article (contains nice translation section): http://www21.in.tum.de/~blanchet/h4qed.pdf
+
+
+
 31.3.2015
 =========
 
